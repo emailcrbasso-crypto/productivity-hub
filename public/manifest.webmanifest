@@ -1,0 +1,25 @@
+{
+  "name": "Hub de Produtividade",
+  "short_name": "Hub",
+  "description": "Eisenhower, Pomodoro, Time Boxing e Plano Semanal — tudo em um só app.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#18181b",
+  "background_color": "#fafafa",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
