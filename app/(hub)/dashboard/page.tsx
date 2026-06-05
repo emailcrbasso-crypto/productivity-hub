@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { DebugXpButton } from "./DebugXpButton";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -24,7 +23,6 @@ export default async function DashboardPage() {
           Bem-vindo ao seu hub de produtividade.
         </p>
       </div>
-      <DebugXpButton />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {["Eisenhower", "Pomodoro", "Time Boxing", "Plano Semanal"].map((m) => (
