@@ -104,12 +104,15 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const plannedRef = useRef(DEFAULT_SETTINGS.focusMinutes * 60);
   const sessionIdRef = useRef<string | null>(null);
-  const timeLeftRef = useRef(DEFAULT_SETTINGS.focusMinutes * 60);
+  // Timestamp-based tracking — immune to browser background tab throttling
+  const startedAtRef = useRef(0);       // Date.now() when current run period began
+  const elapsedBeforeRef = useRef(0);   // ms accumulated across all previous run periods
+  const timerStateRef = useRef<TimerState>("idle");
   const sessionTypeRef = useRef<SessionType>("focus");
   const cycleCountRef = useRef(0);
   const settingsDialogRef = useRef<HTMLDialogElement>(null);
 
-  useEffect(() => { timeLeftRef.current = timeLeft; }, [timeLeft]);
+  useEffect(() => { timerStateRef.current = timerState; }, [timerState]);
   useEffect(() => { sessionTypeRef.current = sessionType; }, [sessionType]);
   useEffect(() => { cycleCountRef.current = cycleCount; }, [cycleCount]);
 
@@ -120,7 +123,6 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
     const planned = getPlannedSeconds("focus", s);
     setTimeLeft(planned);
     plannedRef.current = planned;
-    timeLeftRef.current = planned;
   }, []);
 
   useEffect(() => {
@@ -181,21 +183,42 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
     }
   }
 
-  function startCountdown() {
-    intervalRef.current = setInterval(() => {
-      setTimeLeft((prev) => {
-        const next = prev - 1;
-        if (next <= 0) {
-          clearInterval(intervalRef.current!);
-          intervalRef.current = null;
-          setTimerState("completed");
-          setShouldComplete(true);
-          return 0;
-        }
-        return next;
-      });
-    }, 1000);
+  function computeRemaining(): number {
+    const totalMs = elapsedBeforeRef.current + (Date.now() - startedAtRef.current);
+    return Math.max(0, plannedRef.current - Math.floor(totalMs / 1000));
   }
+
+  function startCountdown() {
+    startedAtRef.current = Date.now();
+    // Poll at 500ms so we stay accurate even with background throttling
+    intervalRef.current = setInterval(() => {
+      const remaining = computeRemaining();
+      setTimeLeft(remaining);
+      if (remaining <= 0) {
+        clearInterval(intervalRef.current!);
+        intervalRef.current = null;
+        setTimerState("completed");
+        setShouldComplete(true);
+      }
+    }, 500);
+  }
+
+  // Recalculate immediately when tab regains focus
+  useEffect(() => {
+    function handleVisible() {
+      if (timerStateRef.current !== "running") return;
+      const remaining = computeRemaining();
+      setTimeLeft(remaining);
+      if (remaining <= 0) {
+        clearTimer();
+        setTimerState("completed");
+        setShouldComplete(true);
+      }
+    }
+    document.addEventListener("visibilitychange", handleVisible);
+    return () => document.removeEventListener("visibilitychange", handleVisible);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleStart() {
     if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "default") {
@@ -210,6 +233,7 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
         taskId: linkedTaskId || null,
       });
       sessionIdRef.current = id;
+      elapsedBeforeRef.current = 0;
       setTimerState("running");
       startCountdown();
     } catch (err) {
@@ -219,6 +243,8 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
   }
 
   function handlePause() {
+    // Accumulate elapsed time so resume picks up where we left off
+    elapsedBeforeRef.current += Date.now() - startedAtRef.current;
     clearTimer();
     setTimerState("paused");
   }
@@ -229,9 +255,13 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
   }
 
   function handleStop() {
+    const elapsed = Math.floor(
+      (elapsedBeforeRef.current +
+        (timerStateRef.current === "running" ? Date.now() - startedAtRef.current : 0)) /
+        1000,
+    );
     clearTimer();
     const id = sessionIdRef.current;
-    const elapsed = plannedRef.current - timeLeftRef.current;
     if (id && elapsed > 0) {
       interruptSession(id, elapsed).catch((err) =>
         console.error("interruptSession failed", err),
@@ -245,7 +275,7 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
     const planned = getPlannedSeconds(type, eff);
     setTimeLeft(planned);
     plannedRef.current = planned;
-    timeLeftRef.current = planned;
+    elapsedBeforeRef.current = 0;
     setTimerState("idle");
     sessionIdRef.current = null;
   }
