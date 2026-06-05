@@ -87,6 +87,37 @@ function sendNotification(title: string, body: string) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Timer persistence across hub page navigations
+// ---------------------------------------------------------------------------
+const TIMER_PERSIST_KEY = "pomodoro_running_session";
+
+type PersistedTimer = {
+  timerState: "running" | "paused";
+  sessionId: string;
+  sessionType: SessionType;
+  plannedSeconds: number;
+  startedAt: number;   // absolute Date.now() timestamp
+  elapsedBefore: number; // ms accumulated before current run
+  cycleCount: number;
+  linkedTaskId: string;
+};
+
+function persistTimer(data: PersistedTimer) {
+  try { localStorage.setItem(TIMER_PERSIST_KEY, JSON.stringify(data)); } catch { /* ignore */ }
+}
+
+function clearPersistedTimer() {
+  try { localStorage.removeItem(TIMER_PERSIST_KEY); } catch { /* ignore */ }
+}
+
+function loadPersistedTimer(): PersistedTimer | null {
+  try {
+    const raw = localStorage.getItem(TIMER_PERSIST_KEY);
+    return raw ? (JSON.parse(raw) as PersistedTimer) : null;
+  } catch { return null; }
+}
+
 export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
   const [settings, setSettings] = useState<PomodoroSettings>(DEFAULT_SETTINGS);
   const [sessionType, setSessionType] = useState<SessionType>("focus");
@@ -120,9 +151,48 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
     const s = loadSettings();
     setSettings(s);
     setDraftSettings(s);
+
+    // Restore in-progress session if user navigated away
+    const saved = loadPersistedTimer();
+    if (saved) {
+      setSessionType(saved.sessionType);
+      sessionTypeRef.current = saved.sessionType;
+      plannedRef.current = saved.plannedSeconds;
+      elapsedBeforeRef.current = saved.elapsedBefore;
+      sessionIdRef.current = saved.sessionId;
+      setCycleCount(saved.cycleCount);
+      cycleCountRef.current = saved.cycleCount;
+      setLinkedTaskId(saved.linkedTaskId);
+
+      if (saved.timerState === "running") {
+        const totalMs = saved.elapsedBefore + (Date.now() - saved.startedAt);
+        const remaining = Math.max(0, saved.plannedSeconds - Math.floor(totalMs / 1000));
+        if (remaining > 0) {
+          // Restore startedAt so computeRemaining() stays accurate
+          startedAtRef.current = saved.startedAt;
+          setTimeLeft(remaining);
+          setTimerState("running");
+          startCountdown();
+        } else {
+          // Completed while away — trigger completion flow
+          setTimeLeft(0);
+          setTimerState("completed");
+          setShouldComplete(true);
+          clearPersistedTimer();
+        }
+      } else {
+        // paused
+        const remaining = Math.max(0, saved.plannedSeconds - Math.floor(saved.elapsedBefore / 1000));
+        setTimeLeft(remaining);
+        setTimerState("paused");
+      }
+      return;
+    }
+
     const planned = getPlannedSeconds("focus", s);
     setTimeLeft(planned);
     plannedRef.current = planned;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -154,6 +224,7 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
     const type = sessionTypeRef.current;
 
     playBeep();
+    clearPersistedTimer();
 
     completeSession(id, planned)
       .then((result) => {
@@ -235,7 +306,17 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
       sessionIdRef.current = id;
       elapsedBeforeRef.current = 0;
       setTimerState("running");
-      startCountdown();
+      startCountdown(); // sets startedAtRef.current
+      persistTimer({
+        timerState: "running",
+        sessionId: id,
+        sessionType: sessionTypeRef.current,
+        plannedSeconds: plannedRef.current,
+        startedAt: startedAtRef.current,
+        elapsedBefore: 0,
+        cycleCount: cycleCountRef.current,
+        linkedTaskId: linkedTaskId,
+      });
     } catch (err) {
       console.error("startSession failed", err);
       setToast("Erro ao iniciar sessão. Tente novamente.");
@@ -243,15 +324,38 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
   }
 
   function handlePause() {
-    // Accumulate elapsed time so resume picks up where we left off
     elapsedBeforeRef.current += Date.now() - startedAtRef.current;
     clearTimer();
     setTimerState("paused");
+    if (sessionIdRef.current) {
+      persistTimer({
+        timerState: "paused",
+        sessionId: sessionIdRef.current,
+        sessionType: sessionTypeRef.current,
+        plannedSeconds: plannedRef.current,
+        startedAt: startedAtRef.current,
+        elapsedBefore: elapsedBeforeRef.current,
+        cycleCount: cycleCountRef.current,
+        linkedTaskId: linkedTaskId,
+      });
+    }
   }
 
   function handleResume() {
     setTimerState("running");
-    startCountdown();
+    startCountdown(); // resets startedAtRef.current
+    if (sessionIdRef.current) {
+      persistTimer({
+        timerState: "running",
+        sessionId: sessionIdRef.current,
+        sessionType: sessionTypeRef.current,
+        plannedSeconds: plannedRef.current,
+        startedAt: startedAtRef.current,
+        elapsedBefore: elapsedBeforeRef.current,
+        cycleCount: cycleCountRef.current,
+        linkedTaskId: linkedTaskId,
+      });
+    }
   }
 
   function handleStop() {
@@ -278,6 +382,7 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
     elapsedBeforeRef.current = 0;
     setTimerState("idle");
     sessionIdRef.current = null;
+    clearPersistedTimer();
   }
 
   function handleNextSession() {
