@@ -235,17 +235,17 @@ export function Timeline({ initialBlocks, initialDate }: Props) {
         <div className="flex">
           {/* ── Left: time labels column ── */}
           <div
-            className="shrink-0 select-none bg-zinc-50 dark:bg-zinc-900"
+            className="shrink-0 select-none border-r border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900"
             style={{ width: LABEL_WIDTH, position: "relative", height: TOTAL_HEIGHT }}
           >
             {HOURS.map((h) => (
               <div
                 key={h}
-                className="absolute left-0 right-0 flex items-start justify-end pr-2.5"
+                className="absolute left-0 right-0 flex items-start justify-end pr-3"
                 style={{ top: (h - START_HOUR) * HOUR_HEIGHT, height: HOUR_HEIGHT }}
               >
-                <span className="mt-[-8px] text-[11px] font-medium tabular-nums text-zinc-400 dark:text-zinc-500">
-                  {String(h).padStart(2, "0")}:00
+                <span className="mt-[-7px] text-[11px] font-semibold tabular-nums text-zinc-500 dark:text-zinc-400">
+                  {String(h).padStart(2, "0")}h
                 </span>
               </div>
             ))}
@@ -257,31 +257,34 @@ export function Timeline({ initialBlocks, initialDate }: Props) {
             style={{ height: TOTAL_HEIGHT }}
             onClick={handleTimelineClick}
           >
-            {/* Hour grid lines */}
+            {/* Alternating row backgrounds */}
             {HOURS.map((h) => (
               <div
                 key={h}
+                className={cn(
+                  "pointer-events-none absolute left-0 right-0",
+                  h % 2 === 0 ? "bg-white dark:bg-zinc-950" : "bg-zinc-50/60 dark:bg-zinc-900/40",
+                )}
+                style={{ top: (h - START_HOUR) * HOUR_HEIGHT, height: HOUR_HEIGHT }}
+              />
+            ))}
+
+            {/* Hour grid lines */}
+            {HOURS.map((h) => (
+              <div
+                key={`line-${h}`}
                 className="pointer-events-none absolute left-0 right-0"
                 style={{ top: (h - START_HOUR) * HOUR_HEIGHT }}
               >
                 {/* Full-hour line */}
-                <div className="absolute inset-x-0 top-0 border-t border-zinc-200 dark:border-zinc-800" />
+                <div className="absolute inset-x-0 top-0 border-t border-zinc-200 dark:border-zinc-700/60" />
                 {/* Half-hour line */}
                 <div
-                  className="absolute inset-x-0 border-t border-zinc-100 dark:border-zinc-900"
+                  className="absolute inset-x-0 border-t border-dashed border-zinc-200/70 dark:border-zinc-800"
                   style={{ top: HOUR_HEIGHT / 2 }}
                 />
               </div>
             ))}
-
-            {/* "Working hours" subtle band — 08:00–18:00 */}
-            <div
-              className="pointer-events-none absolute left-0 right-0 bg-indigo-50/30 dark:bg-indigo-950/10"
-              style={{
-                top: (8 - START_HOUR) * HOUR_HEIGHT,
-                height: (18 - 8) * HOUR_HEIGHT,
-              }}
-            />
 
             {/* Current time indicator */}
             {currentTimeTop !== null && currentTimeTop >= 0 && currentTimeTop <= TOTAL_HEIGHT && (
