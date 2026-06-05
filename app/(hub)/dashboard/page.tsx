@@ -8,6 +8,8 @@ import {
   Zap,
   Trophy,
   ArrowRight,
+  CalendarClock,
+  ListTodo,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { xpForLevel } from "@/lib/gamification/xp-rules";
@@ -23,6 +25,21 @@ const SOURCE_META: Record<string, { label: string; color: string }> = {
   hub: { label: "Hub", color: "bg-indigo-400" },
 };
 
+const BLOCK_DOT: Record<string, string> = {
+  indigo: "bg-indigo-500",
+  red: "bg-red-500",
+  amber: "bg-amber-500",
+  emerald: "bg-emerald-500",
+  sky: "bg-sky-500",
+  violet: "bg-violet-500",
+  pink: "bg-pink-500",
+  orange: "bg-orange-500",
+};
+
+function fmtTime(t: string) {
+  return t.slice(0, 5); // "HH:MM:SS" → "HH:MM"
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient();
   const {
@@ -32,6 +49,7 @@ export default async function DashboardPage() {
 
   const todayStart = new Date();
   todayStart.setUTCHours(0, 0, 0, 0);
+  const todayDateISO = todayStart.toISOString().slice(0, 10);
   const weekStart = currentWeekStart();
 
   const [
@@ -42,6 +60,8 @@ export default async function DashboardPage() {
     { data: weekGoals },
     { data: recentAchievements },
     { data: todayXpEvents },
+    { data: upcomingBlocks },
+    { data: q1Tasks },
   ] = await Promise.all([
     supabase
       .from("profiles")
@@ -79,6 +99,23 @@ export default async function DashboardPage() {
       .select("source, xp_amount")
       .eq("user_id", user.id)
       .gte("created_at", todayStart.toISOString()),
+    // NEW: hoje's non-completed blocks ordered by start_time
+    supabase
+      .from("timeboxing_blocks")
+      .select("id, title, start_time, end_time, color")
+      .eq("date", todayDateISO)
+      .eq("is_completed", false)
+      .order("start_time", { ascending: true })
+      .limit(5),
+    // NEW: Q1 (urgent + important) pending tasks
+    supabase
+      .from("eisenhower_tasks")
+      .select("id, title")
+      .eq("is_urgent", true)
+      .eq("is_important", true)
+      .eq("is_completed", false)
+      .order("position", { ascending: true })
+      .limit(5),
   ]);
 
   const level = profile?.current_level ?? 1;
@@ -114,6 +151,8 @@ export default async function DashboardPage() {
     .sort(([, a], [, b]) => b - a);
 
   const firstName = (profile?.full_name ?? "você").split(" ")[0];
+  const hasSchedule = (upcomingBlocks ?? []).length > 0;
+  const hasQ1 = (q1Tasks ?? []).length > 0;
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-8">
@@ -185,6 +224,86 @@ export default async function DashboardPage() {
         </div>
       </div>
 
+      {/* ── NOVO: Seu dia ── */}
+      {(hasSchedule || hasQ1) && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {/* Próximos blocos */}
+          {hasSchedule && (
+            <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+              <div className="flex items-center justify-between border-b border-zinc-100 px-4 py-3 dark:border-zinc-800">
+                <h3 className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-white">
+                  <CalendarClock size={14} className="text-sky-500" />
+                  Blocos de hoje
+                </h3>
+                <Link
+                  href="/timeboxing"
+                  className="text-[11px] text-indigo-600 hover:underline dark:text-indigo-400"
+                >
+                  Ver todos →
+                </Link>
+              </div>
+              <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                {(upcomingBlocks ?? []).map((block) => (
+                  <li key={block.id} className="flex items-center gap-3 px-4 py-2.5">
+                    <span
+                      className={`h-2.5 w-2.5 shrink-0 rounded-full ${BLOCK_DOT[block.color] ?? "bg-zinc-400"}`}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xs font-medium text-zinc-900 dark:text-white">
+                        {block.title}
+                      </p>
+                      <p className="text-[11px] tabular-nums text-zinc-400">
+                        {fmtTime(block.start_time)} – {fmtTime(block.end_time)}
+                      </p>
+                    </div>
+                    <Link
+                      href={`/pomodoro?block=${encodeURIComponent(block.title)}`}
+                      className="flex shrink-0 items-center gap-1 rounded-md bg-sky-50 px-2 py-1 text-[10px] font-semibold text-sky-600 transition-colors hover:bg-sky-100 dark:bg-sky-950/30 dark:text-sky-400 dark:hover:bg-sky-950/50"
+                    >
+                      <Timer size={10} /> Foco
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Q1 — Urgente + Importante */}
+          {hasQ1 && (
+            <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+              <div className="flex items-center justify-between border-b border-zinc-100 px-4 py-3 dark:border-zinc-800">
+                <h3 className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-white">
+                  <ListTodo size={14} className="text-red-500" />
+                  Urgente &amp; importante
+                </h3>
+                <Link
+                  href="/eisenhower"
+                  className="text-[11px] text-indigo-600 hover:underline dark:text-indigo-400"
+                >
+                  Ver todas →
+                </Link>
+              </div>
+              <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                {(q1Tasks ?? []).map((task) => (
+                  <li key={task.id} className="flex items-center gap-3 px-4 py-2.5">
+                    <span className="h-2 w-2 shrink-0 rounded-full bg-red-500" />
+                    <p className="min-w-0 flex-1 truncate text-xs font-medium text-zinc-900 dark:text-white">
+                      {task.title}
+                    </p>
+                    <Link
+                      href="/eisenhower"
+                      className="shrink-0 text-zinc-300 transition-colors hover:text-zinc-500 dark:text-zinc-700"
+                    >
+                      <ArrowRight size={13} />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Today stats */}
       <div>
         <h3 className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-zinc-400">
@@ -239,12 +358,8 @@ export default async function DashboardPage() {
                   className="text-zinc-200 transition-colors group-hover:text-zinc-400 dark:text-zinc-700"
                 />
               </div>
-              <p className="mt-3 text-2xl font-bold text-zinc-900 dark:text-white">
-                {value}
-              </p>
-              <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
-                {label}
-              </p>
+              <p className="mt-3 text-2xl font-bold text-zinc-900 dark:text-white">{value}</p>
+              <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400">{label}</p>
               <p className="text-[11px] text-zinc-400">{sub}</p>
             </Link>
           ))}
@@ -266,17 +381,12 @@ export default async function DashboardPage() {
           ) : (
             <div className="mt-4 space-y-3">
               {xpEntries.map(([source, amount]) => {
-                const meta = SOURCE_META[source] ?? {
-                  label: source,
-                  color: "bg-zinc-400",
-                };
+                const meta = SOURCE_META[source] ?? { label: source, color: "bg-zinc-400" };
                 const pct = Math.round((amount / totalXpToday) * 100);
                 return (
                   <div key={source}>
                     <div className="mb-1 flex items-center justify-between text-xs">
-                      <span className="text-zinc-600 dark:text-zinc-400">
-                        {meta.label}
-                      </span>
+                      <span className="text-zinc-600 dark:text-zinc-400">{meta.label}</span>
                       <span className="font-semibold text-zinc-900 dark:text-white">
                         +{amount} XP
                       </span>
