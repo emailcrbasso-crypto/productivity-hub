@@ -14,3 +14,4 @@ Each `.sql` file in `migrations/` is idempotent and safe to re-run.
 | File | Purpose |
 |------|---------|
 | `0001_hub_core.sql` | Hub-level tables: profiles, xp_events, achievements, user_achievements, trigger on_auth_user_created, RLS, seed |
+| `0002_eisenhower.sql` | Eisenhower module: eisenhower_tasks (quadrant derived from is_urgent + is_important), RLS, xp_awarded anti-duplicate flag |
