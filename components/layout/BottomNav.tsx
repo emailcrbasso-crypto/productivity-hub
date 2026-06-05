@@ -19,7 +19,7 @@ export function BottomNav() {
             className={cn(
               "flex flex-1 flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors",
               active
-                ? "text-zinc-900 dark:text-white"
+                ? "text-indigo-600 dark:text-indigo-400"
                 : "text-zinc-500 dark:text-zinc-400",
             )}
           >

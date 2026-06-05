@@ -18,7 +18,7 @@ export function Sidebar({ userName, avatarUrl }: Props) {
   return (
     <aside className="hidden md:flex md:w-60 md:flex-col md:border-r md:border-zinc-200 md:bg-white dark:md:border-zinc-800 dark:md:bg-zinc-950">
       <div className="flex h-16 items-center gap-2 px-6 text-lg font-semibold text-zinc-900 dark:text-white">
-        <span aria-hidden>⚡</span> Hub
+        <span aria-hidden className="text-indigo-600 dark:text-indigo-400">⚡</span> Hub
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-2">
@@ -31,7 +31,7 @@ export function Sidebar({ userName, avatarUrl }: Props) {
               className={cn(
                 "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                 active
-                  ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white"
+                  ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300"
                   : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-white",
               )}
             >

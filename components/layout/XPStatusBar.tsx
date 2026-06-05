@@ -23,7 +23,7 @@ export function XPStatusBar({ level, totalXp, streak }: Props) {
     <div className="flex items-center gap-3">
       <div className="hidden sm:block">
         <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
-          <span className="rounded-md bg-zinc-900 px-1.5 py-0.5 text-[10px] font-bold text-white dark:bg-white dark:text-zinc-900">
+          <span className="rounded-md bg-indigo-600 px-1.5 py-0.5 text-[10px] font-bold text-white dark:bg-indigo-500">
             LV {level}
           </span>
           <span className="font-medium tabular-nums">
@@ -32,7 +32,7 @@ export function XPStatusBar({ level, totalXp, streak }: Props) {
         </div>
         <div className="mt-1 h-1.5 w-40 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
           <div
-            className="h-full bg-zinc-900 transition-[width] dark:bg-white"
+            className="h-full bg-indigo-600 transition-[width] dark:bg-indigo-500"
             style={{ width: `${pct}%` }}
           />
         </div>
