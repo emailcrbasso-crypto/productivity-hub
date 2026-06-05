@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Play, Pause, Square, Settings2 } from "lucide-react";
+import { Play, Pause, Square, Settings2, Boxes } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { startSession, completeSession, interruptSession } from "./actions";
@@ -118,7 +118,13 @@ function loadPersistedTimer(): PersistedTimer | null {
   } catch { return null; }
 }
 
-export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
+export function PomodoroTimer({
+  pendingTasks,
+  blockContext,
+}: {
+  pendingTasks: Task[];
+  blockContext?: string | null;
+}) {
   const [settings, setSettings] = useState<PomodoroSettings>(DEFAULT_SETTINGS);
   const [sessionType, setSessionType] = useState<SessionType>("focus");
   const [timerState, setTimerState] = useState<TimerState>("idle");
@@ -419,6 +425,16 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Time Boxing context banner */}
+      {blockContext && (
+        <div className="flex items-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2.5 text-xs dark:border-sky-800/50 dark:bg-sky-950/30">
+          <Boxes size={14} className="shrink-0 text-sky-600 dark:text-sky-400" />
+          <span className="text-sky-800 dark:text-sky-300">
+            Bloco ativo: <span className="font-semibold">{blockContext}</span>
+          </span>
+        </div>
+      )}
+
       {/* Notification banner */}
       {notifPermission === "default" && !notifBannerDismissed && (
         <div className="flex items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs dark:border-amber-800/50 dark:bg-amber-950/30">

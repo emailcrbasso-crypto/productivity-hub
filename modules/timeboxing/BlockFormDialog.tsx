@@ -18,6 +18,7 @@ type Props = {
   date: string;
   defaultStartTime?: string;
   defaultEndTime?: string;
+  defaultTitle?: string;
   editing?: TimeboxBlock | null;
 };
 
@@ -27,6 +28,7 @@ export function BlockFormDialog({
   date,
   defaultStartTime = "09:00",
   defaultEndTime = "10:00",
+  defaultTitle,
   editing = null,
 }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -61,7 +63,7 @@ export function BlockFormDialog({
     });
   }
 
-  const title = editing?.title ?? "";
+  const title = editing?.title ?? defaultTitle ?? "";
   const description = editing?.description ?? "";
   const blockDate = editing?.date ?? date;
   const startTime = editing?.start_time?.slice(0, 5) ?? defaultStartTime;

@@ -15,11 +15,13 @@ type Props = {
   onClose: () => void;
   /** Pre-filled quadrant for new tasks */
   defaultQuadrant?: Quadrant;
+  /** Pre-filled title for new tasks (e.g. from Weekly Plan) */
+  defaultTitle?: string;
   /** Task being edited; null for new */
   editing?: EisenhowerTask | null;
 };
 
-export function TaskFormDialog({ open, onClose, defaultQuadrant, editing }: Props) {
+export function TaskFormDialog({ open, onClose, defaultQuadrant, defaultTitle, editing }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -28,14 +30,14 @@ export function TaskFormDialog({ open, onClose, defaultQuadrant, editing }: Prop
     ? quadrantOf(editing)
     : defaultQuadrant ?? "q1";
 
-  const [title, setTitle] = useState(editing?.title ?? "");
+  const [title, setTitle] = useState(editing?.title ?? defaultTitle ?? "");
   const [description, setDescription] = useState(editing?.description ?? "");
   const [quadrant, setQuadrant] = useState<Quadrant>(initialQuadrant);
   const [dueDate, setDueDate] = useState(editing?.due_date ?? "");
 
   useEffect(() => {
     if (open) {
-      setTitle(editing?.title ?? "");
+      setTitle(editing?.title ?? defaultTitle ?? "");
       setDescription(editing?.description ?? "");
       setQuadrant(initialQuadrant);
       setDueDate(editing?.due_date ?? "");

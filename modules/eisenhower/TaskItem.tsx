@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { MoreVertical, Trash2, Pencil, ArrowRight } from "lucide-react";
+import { MoreVertical, Trash2, Pencil, ArrowRight, CalendarPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   QUADRANTS,
@@ -16,6 +16,7 @@ type Props = {
   task: EisenhowerTask;
   onEdit: () => void;
   onAfterToggle?: (msg: string) => void;
+  onSchedule?: () => void;
 };
 
 function formatDue(due: string | null) {
@@ -31,7 +32,7 @@ function formatDue(due: string | null) {
   return { text: fmt, overdue: false };
 }
 
-export function TaskItem({ task, onEdit, onAfterToggle }: Props) {
+export function TaskItem({ task, onEdit, onAfterToggle, onSchedule }: Props) {
   const [pending, startTransition] = useTransition();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -132,6 +133,19 @@ export function TaskItem({ task, onEdit, onAfterToggle }: Props) {
             >
               <Pencil size={12} /> Editar
             </button>
+            {onSchedule && (
+              <button
+                type="button"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  setMenuOpen(false);
+                  onSchedule();
+                }}
+                className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950/30"
+              >
+                <CalendarPlus size={12} /> Agendar no Time Boxing
+              </button>
+            )}
             <div className="my-1 border-t border-zinc-100 dark:border-zinc-800" />
             <p className="px-3 pt-1 pb-0.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
               Mover para

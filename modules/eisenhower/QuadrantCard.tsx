@@ -13,6 +13,7 @@ type Props = {
   onAdd: () => void;
   onEdit: (task: EisenhowerTask) => void;
   onAfterToggle: (msg: string) => void;
+  onSchedule: (task: EisenhowerTask) => void;
 };
 
 export function QuadrantCard({
@@ -22,6 +23,7 @@ export function QuadrantCard({
   onAdd,
   onEdit,
   onAfterToggle,
+  onSchedule,
 }: Props) {
   const [helpOpen, setHelpOpen] = useState(false);
   const visible = showCompleted ? tasks : tasks.filter((t) => !t.is_completed);
@@ -136,6 +138,7 @@ export function QuadrantCard({
               task={task}
               onEdit={() => onEdit(task)}
               onAfterToggle={onAfterToggle}
+              onSchedule={() => onSchedule(task)}
             />
           ))
         )}

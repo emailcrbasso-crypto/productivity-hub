@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useTransition, useRef } from "react";
-import { Plus, ChevronLeft, ChevronRight, Check, Pencil, Trash2, MousePointerClick } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Plus, ChevronLeft, ChevronRight, Check, Pencil, Trash2, MousePointerClick, Timer } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { toggleCompleteBlock, deleteBlock, getBlocksForDate } from "./actions";
@@ -41,6 +42,7 @@ export function Timeline({ initialBlocks, initialDate }: Props) {
   const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
   const timelineRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   const today = todayISO();
 
   // Current time indicator
@@ -355,6 +357,24 @@ export function Timeline({ initialBlocks, initialDate }: Props) {
                       <div className={cn("mt-auto text-[10px] font-semibold opacity-70", colors.text)}>
                         ✓ Concluído
                       </div>
+                    )}
+
+                    {/* Focus button — shows on hover for active blocks */}
+                    {!block.is_completed && height >= 44 && (
+                      <button
+                        type="button"
+                        data-block="true"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/pomodoro?block=${encodeURIComponent(block.title)}`);
+                        }}
+                        className={cn(
+                          "mt-auto flex items-center gap-1 rounded px-1 py-0.5 text-[10px] font-semibold opacity-0 transition-opacity group-hover:opacity-100 hover:bg-black/10",
+                          colors.text,
+                        )}
+                      >
+                        <Timer size={10} /> Foco
+                      </button>
                     )}
 
                     {/* Context menu */}

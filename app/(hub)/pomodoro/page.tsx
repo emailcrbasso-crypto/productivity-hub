@@ -5,7 +5,14 @@ import type { PomodoroSession } from "@/modules/pomodoro/types";
 
 export const metadata = { title: "Pomodoro" };
 
-export default async function PomodoroPage() {
+type Props = {
+  searchParams: Promise<{ block?: string }>;
+};
+
+export default async function PomodoroPage({ searchParams }: Props) {
+  const params = await searchParams;
+  const blockContext = params.block ? decodeURIComponent(params.block) : null;
+
   const supabase = await createClient();
 
   const todayStart = new Date();
@@ -51,7 +58,7 @@ export default async function PomodoroPage() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
         {/* Timer — takes 3 columns */}
         <div className="lg:col-span-3">
-          <PomodoroTimer pendingTasks={pendingTasks} />
+          <PomodoroTimer pendingTasks={pendingTasks} blockContext={blockContext} />
         </div>
 
         {/* Task list panel — takes 2 columns */}

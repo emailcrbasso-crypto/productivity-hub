@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   ChevronLeft,
   ChevronRight,
@@ -10,6 +11,7 @@ import {
   Trash2,
   BookOpen,
   Star,
+  SquarePen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -58,6 +60,7 @@ export function WeeklyPlanBoard({ initialGoals, initialReview, initialWeekStart 
   const [reviewSaved, setReviewSaved] = useState(false);
 
   const [, startTransition] = useTransition();
+  const router = useRouter();
 
   // Sync review drafts when review loads
   useEffect(() => {
@@ -345,6 +348,18 @@ export function WeeklyPlanBoard({ initialGoals, initialReview, initialWeekStart 
                           <Pencil size={13} />
                           Editar
                         </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMenuOpenId(null);
+                            router.push(`/eisenhower?goal=${encodeURIComponent(goal.title)}`);
+                          }}
+                          className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950/30"
+                        >
+                          <SquarePen size={13} />
+                          Criar tarefa no Eisenhower
+                        </button>
+                        <div className="my-1 border-t border-zinc-100 dark:border-zinc-800" />
                         <button
                           type="button"
                           onClick={() => handleDelete(goal.id)}

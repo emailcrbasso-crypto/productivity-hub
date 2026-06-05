@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { QuadrantCard } from "./QuadrantCard";
 import { TaskFormDialog } from "./TaskFormDialog";
+import { BlockFormDialog } from "@/modules/timeboxing/BlockFormDialog";
+import { todayISO } from "@/modules/timeboxing/types";
 import {
   QUADRANTS,
   quadrantOf,
@@ -15,6 +17,7 @@ import {
 
 type Props = {
   tasks: EisenhowerTask[];
+  prefillTitle?: string;
 };
 
 function isToday(iso: string | null) {
@@ -28,12 +31,23 @@ function isToday(iso: string | null) {
   );
 }
 
-export function Board({ tasks }: Props) {
+export function Board({ tasks, prefillTitle }: Props) {
   const [showCompleted, setShowCompleted] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [defaultQuadrant, setDefaultQuadrant] = useState<Quadrant>("q1");
   const [editing, setEditing] = useState<EisenhowerTask | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [schedulingTask, setSchedulingTask] = useState<EisenhowerTask | null>(null);
+
+  // Auto-open task form when arriving from Weekly Plan
+  useEffect(() => {
+    if (prefillTitle) {
+      setEditing(null);
+      setDefaultQuadrant("q1");
+      setDialogOpen(true);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!toast) return;
@@ -125,6 +139,7 @@ export function Board({ tasks }: Props) {
             onAdd={() => openCreate(meta.id)}
             onEdit={openEdit}
             onAfterToggle={(msg) => setToast(msg)}
+            onSchedule={(task) => setSchedulingTask(task)}
           />
         ))}
       </div>
@@ -133,7 +148,16 @@ export function Board({ tasks }: Props) {
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         defaultQuadrant={defaultQuadrant}
+        defaultTitle={!editing ? prefillTitle : undefined}
         editing={editing}
+      />
+
+      {/* Schedule task as Time Boxing block */}
+      <BlockFormDialog
+        open={!!schedulingTask}
+        onClose={() => setSchedulingTask(null)}
+        date={todayISO()}
+        defaultTitle={schedulingTask?.title}
       />
 
       {toast ? (

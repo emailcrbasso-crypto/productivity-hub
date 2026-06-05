@@ -4,7 +4,14 @@ import type { EisenhowerTask } from "@/modules/eisenhower/types";
 
 export const metadata = { title: "Eisenhower" };
 
-export default async function EisenhowerPage() {
+type Props = {
+  searchParams: Promise<{ goal?: string }>;
+};
+
+export default async function EisenhowerPage({ searchParams }: Props) {
+  const params = await searchParams;
+  const prefillTitle = params.goal ? decodeURIComponent(params.goal) : undefined;
+
   const supabase = await createClient();
   const { data } = await supabase
     .from("eisenhower_tasks")
@@ -24,7 +31,7 @@ export default async function EisenhowerPage() {
           Classifique suas tarefas por urgência e importância.
         </p>
       </div>
-      <Board tasks={tasks} />
+      <Board tasks={tasks} prefillTitle={prefillTitle} />
     </div>
   );
 }
