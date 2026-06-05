@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Play, Pause, Square, Settings2, Link2 } from "lucide-react";
+import { Play, Pause, Square, Settings2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { startSession, completeSession, interruptSession } from "./actions";
@@ -14,27 +14,43 @@ import {
   type PomodoroSettings,
 } from "./types";
 
-type Task = { id: string; title: string };
+export type Task = { id: string; title: string };
 type TimerState = "idle" | "running" | "paused" | "completed";
 
-const CIRCUMFERENCE = 2 * Math.PI * 88;
-
-const SESSION_COLOR_TEXT: Record<SessionType, string> = {
-  focus: "text-indigo-600 dark:text-indigo-400",
-  short_break: "text-emerald-600 dark:text-emerald-400",
-  long_break: "text-sky-600 dark:text-sky-400",
+const SESSION_BG: Record<SessionType, string> = {
+  focus: "bg-red-50 dark:bg-red-950/20",
+  short_break: "bg-emerald-50 dark:bg-emerald-950/20",
+  long_break: "bg-sky-50 dark:bg-sky-950/20",
 };
 
-const SESSION_COLOR_STROKE: Record<SessionType, string> = {
-  focus: "stroke-indigo-600",
-  short_break: "stroke-emerald-500",
-  long_break: "stroke-sky-500",
+const SESSION_TIME_COLOR: Record<SessionType, string> = {
+  focus: "text-red-500 dark:text-red-400",
+  short_break: "text-emerald-500 dark:text-emerald-400",
+  long_break: "text-sky-500 dark:text-sky-400",
+};
+
+const SESSION_BTN: Record<SessionType, string> = {
+  focus: "bg-red-500 hover:bg-red-600 focus-visible:ring-red-400",
+  short_break: "bg-emerald-500 hover:bg-emerald-600 focus-visible:ring-emerald-400",
+  long_break: "bg-sky-500 hover:bg-sky-600 focus-visible:ring-sky-400",
+};
+
+const SESSION_TAB_ACTIVE: Record<SessionType, string> = {
+  focus: "bg-white text-red-600 shadow-sm dark:bg-zinc-800 dark:text-red-400",
+  short_break: "bg-white text-emerald-600 shadow-sm dark:bg-zinc-800 dark:text-emerald-400",
+  long_break: "bg-white text-sky-600 shadow-sm dark:bg-zinc-800 dark:text-sky-400",
+};
+
+const STATUS_LABEL: Record<TimerState, string> = {
+  idle: "PRONTO",
+  running: "EM ANDAMENTO",
+  paused: "PAUSADO",
+  completed: "CONCLUÍDO ✓",
 };
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
 }
-
 function formatTime(s: number) {
   return `${pad(Math.floor(s / 60))}:${pad(s % 60)}`;
 }
@@ -62,9 +78,7 @@ function playBeep() {
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.0);
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + 1.0);
-  } catch {
-    // AudioContext unavailable
-  }
+  } catch { /* ignore */ }
 }
 
 function sendNotification(title: string, body: string) {
@@ -85,8 +99,8 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
   const [draftSettings, setDraftSettings] = useState<PomodoroSettings>(DEFAULT_SETTINGS);
   const [notifPermission, setNotifPermission] = useState<NotificationPermission>("default");
   const [shouldComplete, setShouldComplete] = useState(false);
+  const [notifBannerDismissed, setNotifBannerDismissed] = useState(false);
 
-  // Refs to avoid stale closures inside interval/effects
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const plannedRef = useRef(DEFAULT_SETTINGS.focusMinutes * 60);
   const sessionIdRef = useRef<string | null>(null);
@@ -95,12 +109,10 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
   const cycleCountRef = useRef(0);
   const settingsDialogRef = useRef<HTMLDialogElement>(null);
 
-  // Sync refs with state
   useEffect(() => { timeLeftRef.current = timeLeft; }, [timeLeft]);
   useEffect(() => { sessionTypeRef.current = sessionType; }, [sessionType]);
   useEffect(() => { cycleCountRef.current = cycleCount; }, [cycleCount]);
 
-  // Load settings from localStorage on mount
   useEffect(() => {
     const s = loadSettings();
     setSettings(s);
@@ -111,14 +123,12 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
     timeLeftRef.current = planned;
   }, []);
 
-  // Notification permission
   useEffect(() => {
     if (typeof window !== "undefined" && "Notification" in window) {
       setNotifPermission(Notification.permission);
     }
   }, []);
 
-  // Settings dialog open/close
   useEffect(() => {
     const el = settingsDialogRef.current;
     if (!el) return;
@@ -126,21 +136,18 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
     else if (el.open) el.close();
   }, [settingsOpen]);
 
-  // Toast auto-dismiss
   useEffect(() => {
     if (!toast) return;
     const t = setTimeout(() => setToast(null), 3500);
     return () => clearTimeout(t);
   }, [toast]);
 
-  // Handle natural timer completion (called via shouldComplete flag to avoid stale closure)
+  // Natural completion handler (avoids stale closures in setInterval)
   useEffect(() => {
     if (!shouldComplete) return;
     setShouldComplete(false);
-
     const id = sessionIdRef.current;
     if (!id) return;
-
     const planned = plannedRef.current;
     const type = sessionTypeRef.current;
 
@@ -152,10 +159,7 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
           const newCount = cycleCountRef.current + 1;
           setCycleCount(newCount);
           cycleCountRef.current = newCount;
-
-          const notifBody = result.awarded ? `+${result.xpGained} XP ganhos!` : "Sessão concluída!";
-          sendNotification("Pomodoro concluído! 🍅", notifBody);
-
+          sendNotification("Pomodoro concluído! 🍅", result.awarded ? `+${result.xpGained} XP ganhos!` : "Sessão concluída!");
           if (result.awarded) {
             let msg = `+${result.xpGained} XP`;
             if (result.leveledUp) msg += " · Level Up! 🎉";
@@ -166,9 +170,7 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
           sendNotification("Pausa concluída!", "Hora de voltar ao foco.");
         }
       })
-      .catch((err) => {
-        console.error("completeSession failed", err);
-      });
+      .catch((err) => console.error("completeSession failed", err));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldComplete]);
 
@@ -199,8 +201,8 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
     if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "default") {
       const perm = await Notification.requestPermission();
       setNotifPermission(perm);
+      setNotifBannerDismissed(true);
     }
-
     try {
       const id = await startSession({
         type: sessionType,
@@ -230,19 +232,17 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
     clearTimer();
     const id = sessionIdRef.current;
     const elapsed = plannedRef.current - timeLeftRef.current;
-
     if (id && elapsed > 0) {
       interruptSession(id, elapsed).catch((err) =>
         console.error("interruptSession failed", err),
       );
     }
-
     applyReset(sessionType);
   }
 
   function applyReset(type: SessionType, s?: PomodoroSettings) {
-    const effectiveSettings = s ?? settings;
-    const planned = getPlannedSeconds(type, effectiveSettings);
+    const eff = s ?? settings;
+    const planned = getPlannedSeconds(type, eff);
     setTimeLeft(planned);
     plannedRef.current = planned;
     timeLeftRef.current = planned;
@@ -253,10 +253,8 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
   function handleNextSession() {
     let nextType: SessionType;
     if (sessionType === "focus") {
-      const atLongBreak =
-        cycleCountRef.current > 0 &&
-        cycleCountRef.current % settings.sessionsBeforeLongBreak === 0;
-      nextType = atLongBreak ? "long_break" : "short_break";
+      const atLong = cycleCountRef.current > 0 && cycleCountRef.current % settings.sessionsBeforeLongBreak === 0;
+      nextType = atLong ? "long_break" : "short_break";
     } else {
       nextType = "focus";
     }
@@ -276,186 +274,200 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
     setSettings(draftSettings);
     localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(draftSettings));
     setSettingsOpen(false);
-    if (timerState === "idle") {
-      applyReset(sessionType, draftSettings);
-    }
+    if (timerState === "idle") applyReset(sessionType, draftSettings);
   }
 
-  const progress = plannedRef.current > 0 ? 1 - timeLeft / plannedRef.current : 0;
-  const dashOffset = CIRCUMFERENCE * progress;
-
+  const canSwitch = timerState === "idle" || timerState === "completed";
+  const linkedTask = pendingTasks.find((t) => t.id === linkedTaskId);
   const cyclePosition = cycleCountRef.current % settings.sessionsBeforeLongBreak;
   const cycleDots = Array.from({ length: settings.sessionsBeforeLongBreak }, (_, i) => i < cyclePosition);
 
-  const canSwitch = timerState === "idle" || timerState === "completed";
-
   return (
-    <div className="flex flex-col items-center gap-6 py-4">
-      {/* Session type tabs */}
-      <div className="flex gap-1 rounded-lg border border-zinc-200 bg-zinc-50 p-1 dark:border-zinc-800 dark:bg-zinc-900">
-        {(["focus", "short_break", "long_break"] as SessionType[]).map((type) => (
-          <button
-            key={type}
-            type="button"
-            onClick={() => switchType(type)}
-            disabled={!canSwitch}
-            className={cn(
-              "rounded-md px-3 py-1.5 text-xs font-medium transition-all disabled:cursor-not-allowed disabled:opacity-50",
-              sessionType === type
-                ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white"
-                : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200",
-            )}
-          >
-            {SESSION_LABELS[type]}
-          </button>
-        ))}
-      </div>
-
-      {/* Circular timer */}
-      <div className="flex flex-col items-center gap-3">
-        <div className="relative h-56 w-56">
-          <svg className="absolute inset-0 -rotate-90" viewBox="0 0 200 200">
-            {/* Track */}
-            <circle
-              cx="100"
-              cy="100"
-              r="88"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="8"
-              className="text-zinc-100 dark:text-zinc-800"
-            />
-            {/* Progress */}
-            <circle
-              cx="100"
-              cy="100"
-              r="88"
-              fill="none"
-              strokeWidth="8"
-              strokeLinecap="round"
-              className={SESSION_COLOR_STROKE[sessionType]}
-              strokeDasharray={`${CIRCUMFERENCE}`}
-              strokeDashoffset={dashOffset}
-              style={{
-                transition:
-                  timerState === "running"
-                    ? "stroke-dashoffset 1s linear"
-                    : "stroke-dashoffset 0.3s ease",
+    <div className="flex flex-col gap-4">
+      {/* Notification banner */}
+      {notifPermission === "default" && !notifBannerDismissed && (
+        <div className="flex items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs dark:border-amber-800/50 dark:bg-amber-950/30">
+          <span className="text-amber-800 dark:text-amber-300">
+            🔔 Ative notificações para saber quando o foco termina, mesmo em outra aba.
+          </span>
+          <div className="flex gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={async () => {
+                const perm = await Notification.requestPermission();
+                setNotifPermission(perm);
+                setNotifBannerDismissed(true);
               }}
-            />
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
-            <span
-              className={cn(
-                "text-5xl font-bold tabular-nums",
-                SESSION_COLOR_TEXT[sessionType],
-              )}
+              className="rounded-md bg-amber-500 px-3 py-1 font-medium text-white hover:bg-amber-600"
             >
-              {formatTime(timeLeft)}
-            </span>
-            <span className="text-xs font-medium text-zinc-400 dark:text-zinc-500">
-              {SESSION_LABELS[sessionType]}
-            </span>
+              Ativar
+            </button>
+            <button
+              type="button"
+              onClick={() => setNotifBannerDismissed(true)}
+              className="text-amber-600 hover:text-amber-800"
+            >
+              ✕
+            </button>
           </div>
         </div>
+      )}
 
-        {/* Cycle dots (focus only) */}
+      {/* Timer card */}
+      <div className={cn("rounded-xl p-6 transition-colors", SESSION_BG[sessionType])}>
+        {/* Session type tabs */}
+        <div className="mb-6 flex gap-1 rounded-lg border border-zinc-200/70 bg-white/60 p-1 dark:border-zinc-700/50 dark:bg-zinc-900/60">
+          {(["focus", "short_break", "long_break"] as SessionType[]).map((type) => (
+            <button
+              key={type}
+              type="button"
+              onClick={() => switchType(type)}
+              disabled={!canSwitch}
+              className={cn(
+                "flex-1 rounded-md py-1.5 text-xs font-medium transition-all disabled:cursor-not-allowed disabled:opacity-50",
+                sessionType === type
+                  ? SESSION_TAB_ACTIVE[sessionType]
+                  : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400",
+              )}
+            >
+              {SESSION_LABELS[type]}
+            </button>
+          ))}
+        </div>
+
+        {/* Big time display */}
+        <div className="flex flex-col items-center gap-1 py-4">
+          <span className={cn("text-7xl font-bold tabular-nums leading-none", SESSION_TIME_COLOR[sessionType])}>
+            {formatTime(timeLeft)}
+          </span>
+          <span className="mt-2 text-[11px] font-semibold tracking-widest text-zinc-400 dark:text-zinc-500">
+            {STATUS_LABEL[timerState]}
+          </span>
+          {linkedTask && (
+            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              Tarefa ativa:{" "}
+              <span className="font-medium text-zinc-700 dark:text-zinc-200">
+                {linkedTask.title}
+              </span>
+            </p>
+          )}
+        </div>
+
+        {/* Controls */}
+        <div className="mt-4 flex items-center justify-center gap-3">
+          {timerState === "idle" && (
+            <button
+              type="button"
+              onClick={handleStart}
+              className={cn(
+                "rounded-xl px-10 py-3 text-sm font-semibold text-white transition-colors focus-visible:outline-none focus-visible:ring-2",
+                SESSION_BTN[sessionType],
+              )}
+            >
+              Iniciar
+            </button>
+          )}
+          {timerState === "running" && (
+            <>
+              <button
+                type="button"
+                onClick={handlePause}
+                className={cn(
+                  "rounded-xl px-8 py-3 text-sm font-semibold text-white transition-colors focus-visible:outline-none focus-visible:ring-2",
+                  SESSION_BTN[sessionType],
+                )}
+              >
+                <Pause size={16} className="inline mr-1.5 -mt-0.5" />
+                Pausar
+              </button>
+              <button
+                type="button"
+                onClick={handleStop}
+                title="Interromper"
+                className="rounded-xl border border-zinc-300 bg-white p-3 text-zinc-400 transition-colors hover:border-red-300 hover:text-red-500 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-red-700 dark:hover:text-red-400"
+              >
+                <Square size={16} />
+              </button>
+            </>
+          )}
+          {timerState === "paused" && (
+            <>
+              <button
+                type="button"
+                onClick={handleResume}
+                className={cn(
+                  "rounded-xl px-8 py-3 text-sm font-semibold text-white transition-colors focus-visible:outline-none focus-visible:ring-2",
+                  SESSION_BTN[sessionType],
+                )}
+              >
+                <Play size={16} className="inline mr-1.5 -mt-0.5" />
+                Retomar
+              </button>
+              <button
+                type="button"
+                onClick={handleStop}
+                title="Interromper"
+                className="rounded-xl border border-zinc-300 bg-white p-3 text-zinc-400 transition-colors hover:border-red-300 hover:text-red-500 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-red-700 dark:hover:text-red-400"
+              >
+                <Square size={16} />
+              </button>
+            </>
+          )}
+          {timerState === "completed" && (
+            <button
+              type="button"
+              onClick={handleNextSession}
+              className={cn(
+                "rounded-xl px-8 py-3 text-sm font-semibold text-white transition-colors focus-visible:outline-none focus-visible:ring-2",
+                SESSION_BTN[sessionType],
+              )}
+            >
+              Próxima sessão →
+            </button>
+          )}
+        </div>
+
+        {/* Cycle dots */}
         {sessionType === "focus" && (
-          <div className="flex items-center gap-2">
+          <div className="mt-5 flex items-center justify-center gap-2">
             {cycleDots.map((done, i) => (
               <div
                 key={i}
                 className={cn(
-                  "h-2 w-2 rounded-full transition-colors",
-                  done ? "bg-indigo-600" : "bg-zinc-200 dark:bg-zinc-700",
+                  "h-2.5 w-2.5 rounded-full transition-colors",
+                  done ? "bg-red-400" : "bg-zinc-300 dark:bg-zinc-600",
                 )}
               />
             ))}
-            <span className="ml-1 text-[10px] text-zinc-400">
-              {cycleCountRef.current % settings.sessionsBeforeLongBreak}/
-              {settings.sessionsBeforeLongBreak}
-            </span>
+            <span className="ml-2 text-[10px] text-zinc-400">ciclos até pausa longa</span>
           </div>
         )}
       </div>
 
-      {/* Task selector */}
-      {pendingTasks.length > 0 && canSwitch && (
-        <div className="flex w-full max-w-xs items-center gap-2">
-          <Link2 size={13} className="shrink-0 text-zinc-400" />
+      {/* Task selector + settings */}
+      <div className="flex items-center gap-3">
+        {pendingTasks.length > 0 && canSwitch && (
           <select
             value={linkedTaskId}
             onChange={(e) => setLinkedTaskId(e.target.value)}
-            className="w-full rounded-md border border-zinc-200 bg-white px-2 py-1.5 text-xs text-zinc-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
+            className="flex-1 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
           >
-            <option value="">Vincular tarefa (opcional)</option>
+            <option value="">Vincular tarefa do Eisenhower (opcional)</option>
             {pendingTasks.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.title}
               </option>
             ))}
           </select>
-        </div>
-      )}
-
-      {/* Controls */}
-      <div className="flex items-center gap-3">
-        {timerState === "idle" && (
-          <Button onClick={handleStart} size="lg" className="w-36">
-            <Play size={16} /> Iniciar
-          </Button>
         )}
-
-        {timerState === "running" && (
-          <>
-            <Button variant="outline" onClick={handlePause} size="lg">
-              <Pause size={16} /> Pausar
-            </Button>
-            <button
-              type="button"
-              onClick={handleStop}
-              title="Interromper sessão"
-              className="rounded-lg border border-zinc-200 p-3 text-zinc-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600 dark:border-zinc-700 dark:hover:border-red-800 dark:hover:bg-red-950/30 dark:hover:text-red-400"
-            >
-              <Square size={18} />
-            </button>
-          </>
-        )}
-
-        {timerState === "paused" && (
-          <>
-            <Button onClick={handleResume} size="lg" className="w-36">
-              <Play size={16} /> Retomar
-            </Button>
-            <button
-              type="button"
-              onClick={handleStop}
-              title="Interromper sessão"
-              className="rounded-lg border border-zinc-200 p-3 text-zinc-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600 dark:border-zinc-700 dark:hover:border-red-800 dark:hover:bg-red-950/30 dark:hover:text-red-400"
-            >
-              <Square size={18} />
-            </button>
-          </>
-        )}
-
-        {timerState === "completed" && (
-          <Button onClick={handleNextSession} size="lg">
-            Próxima sessão →
-          </Button>
-        )}
+        <button
+          type="button"
+          onClick={() => { setDraftSettings(settings); setSettingsOpen(true); }}
+          className="flex shrink-0 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-500 transition-colors hover:text-zinc-800 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:text-zinc-200"
+        >
+          <Settings2 size={13} /> Configurações
+        </button>
       </div>
-
-      {/* Settings link */}
-      <button
-        type="button"
-        onClick={() => {
-          setDraftSettings(settings);
-          setSettingsOpen(true);
-        }}
-        className="flex items-center gap-1.5 text-xs text-zinc-400 transition-colors hover:text-zinc-700 dark:hover:text-zinc-200"
-      >
-        <Settings2 size={13} /> Configurações
-      </button>
 
       {/* Settings dialog */}
       <dialog
@@ -466,7 +478,6 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
         <h2 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">
           Configurações do Pomodoro
         </h2>
-
         <div className="space-y-3">
           {(
             [
@@ -491,28 +502,11 @@ export function PomodoroTimer({ pendingTasks }: { pendingTasks: Task[] }) {
             </div>
           ))}
         </div>
-
-        {notifPermission !== "granted" && typeof window !== "undefined" && "Notification" in window && (
-          <button
-            type="button"
-            onClick={async () => {
-              const perm = await Notification.requestPermission();
-              setNotifPermission(perm);
-            }}
-            disabled={notifPermission === "denied"}
-            className="mt-4 w-full rounded-md bg-zinc-100 py-2 text-xs text-zinc-700 transition-colors hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
-          >
-            {notifPermission === "denied"
-              ? "Notificações bloqueadas no navegador"
-              : "Ativar notificações desktop"}
-          </button>
-        )}
-
         <div className="mt-5 flex gap-2">
           <button
             type="button"
             onClick={() => setSettingsOpen(false)}
-            className="flex-1 rounded-md border border-zinc-200 py-2 text-xs text-zinc-600 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
+            className="flex-1 rounded-md border border-zinc-200 py-2 text-xs text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
           >
             Cancelar
           </button>
