@@ -94,7 +94,7 @@ export function Timeline({ initialBlocks, initialDate }: Props) {
     const mins = START_HOUR * 60 + Math.floor(y / PIXELS_PER_MINUTE);
     const rounded = Math.round(mins / 15) * 15;
     const start = minutesToTimeString(Math.min(rounded, (END_HOUR - 1) * 60));
-    const end = minutesToTimeString(Math.min(rounded + 60, END_HOUR * 60));
+    const end = minutesToTimeString(Math.min(rounded + 60, END_HOUR * 60 - 1));
     setEditing(null);
     setClickTime({ start, end });
     setDialogOpen(true);

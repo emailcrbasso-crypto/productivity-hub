@@ -90,7 +90,7 @@ export const COLOR_OPTIONS = Object.keys(BLOCK_COLORS) as BlockColor[];
 // Timeline constants
 export const HOUR_HEIGHT = 80; // px per hour
 export const START_HOUR = 6;
-export const END_HOUR = 23;
+export const END_HOUR = 24; // até meia-noite (rótulo final 23h)
 export const PIXELS_PER_MINUTE = HOUR_HEIGHT / 60;
 
 export function timeToMinutes(time: string): number {

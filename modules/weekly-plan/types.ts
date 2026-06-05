@@ -1,8 +1,44 @@
+export type GoalCategory = "trabalho" | "pessoal" | "saude" | "estudo" | "outro";
+
+export const GOAL_CATEGORIES: Record<
+  GoalCategory,
+  { label: string; dot: string; badge: string }
+> = {
+  trabalho: {
+    label: "Trabalho",
+    dot: "bg-indigo-500",
+    badge: "bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300",
+  },
+  pessoal: {
+    label: "Pessoal",
+    dot: "bg-pink-500",
+    badge: "bg-pink-100 text-pink-700 dark:bg-pink-950/60 dark:text-pink-300",
+  },
+  saude: {
+    label: "Saúde",
+    dot: "bg-emerald-500",
+    badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300",
+  },
+  estudo: {
+    label: "Estudo",
+    dot: "bg-amber-500",
+    badge: "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300",
+  },
+  outro: {
+    label: "Outro",
+    dot: "bg-zinc-400",
+    badge: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
+  },
+};
+
+export const GOAL_CATEGORY_OPTIONS = Object.keys(GOAL_CATEGORIES) as GoalCategory[];
+
 export type WeeklyGoal = {
   id: string;
   user_id: string;
   title: string;
   description: string | null;
+  category: GoalCategory | null;
   week_start: string; // YYYY-MM-DD (Monday)
   is_completed: boolean;
   completed_at: string | null;

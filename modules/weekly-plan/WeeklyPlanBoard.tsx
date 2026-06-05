@@ -30,6 +30,9 @@ import {
   offsetWeek,
   isFutureWeek,
   currentWeekStart,
+  GOAL_CATEGORIES,
+  GOAL_CATEGORY_OPTIONS,
+  type GoalCategory,
   type WeeklyGoal,
   type WeeklyReview,
 } from "./types";
@@ -49,6 +52,7 @@ export function WeeklyPlanBoard({ initialGoals, initialReview, initialWeekStart 
   // Goal form state
   const [goalFormOpen, setGoalFormOpen] = useState(false);
   const [editingGoal, setEditingGoal] = useState<WeeklyGoal | null>(null);
+  const [categoryDraft, setCategoryDraft] = useState<GoalCategory | "">("");
   const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
   const goalDialogRef = useRef<HTMLDialogElement>(null);
 
@@ -95,11 +99,13 @@ export function WeeklyPlanBoard({ initialGoals, initialReview, initialWeekStart 
 
   function openCreate() {
     setEditingGoal(null);
+    setCategoryDraft("");
     setGoalFormOpen(true);
   }
 
   function openEdit(goal: WeeklyGoal) {
     setEditingGoal(goal);
+    setCategoryDraft(goal.category ?? "");
     setMenuOpenId(null);
     setGoalFormOpen(true);
   }
@@ -117,12 +123,13 @@ export function WeeklyPlanBoard({ initialGoals, initialReview, initialWeekStart 
     const fd = new FormData(e.currentTarget);
     const title = fd.get("title") as string;
     const description = (fd.get("description") as string) || null;
+    const category = (fd.get("category") as string) || null;
 
     startTransition(async () => {
       if (editingGoal) {
-        await updateGoal({ id: editingGoal.id, title, description });
+        await updateGoal({ id: editingGoal.id, title, description, category });
       } else {
-        await createGoal({ title, description, weekStart });
+        await createGoal({ title, description, category, weekStart });
       }
       closeGoalForm();
     });
@@ -300,14 +307,32 @@ export function WeeklyPlanBoard({ initialGoals, initialReview, initialWeekStart 
 
                 {/* Content */}
                 <div className="min-w-0 flex-1">
-                  <p
-                    className={cn(
-                      "text-sm font-medium text-zinc-900 dark:text-white",
-                      goal.is_completed && "text-zinc-400 line-through dark:text-zinc-500",
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p
+                      className={cn(
+                        "text-sm font-medium text-zinc-900 dark:text-white",
+                        goal.is_completed && "text-zinc-400 line-through dark:text-zinc-500",
+                      )}
+                    >
+                      {goal.title}
+                    </p>
+                    {goal.category && GOAL_CATEGORIES[goal.category] && (
+                      <span
+                        className={cn(
+                          "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                          GOAL_CATEGORIES[goal.category].badge,
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "h-1.5 w-1.5 rounded-full",
+                            GOAL_CATEGORIES[goal.category].dot,
+                          )}
+                        />
+                        {GOAL_CATEGORIES[goal.category].label}
+                      </span>
                     )}
-                  >
-                    {goal.title}
-                  </p>
+                  </div>
                   {goal.description && (
                     <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
                       {goal.description}
@@ -473,6 +498,33 @@ export function WeeklyPlanBoard({ initialGoals, initialReview, initialWeekStart 
               placeholder="Opcional"
               className="w-full resize-none rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
             />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-xs font-medium text-zinc-700 dark:text-zinc-300">
+              Categoria
+            </label>
+            <input type="hidden" name="category" value={categoryDraft} />
+            <div className="flex flex-wrap gap-1.5">
+              {GOAL_CATEGORY_OPTIONS.map((c) => {
+                const selected = categoryDraft === c;
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setCategoryDraft(selected ? "" : c)}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors",
+                      selected
+                        ? cn("border-transparent font-semibold", GOAL_CATEGORIES[c].badge)
+                        : "border-zinc-200 text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800",
+                    )}
+                  >
+                    <span className={cn("h-2 w-2 rounded-full", GOAL_CATEGORIES[c].dot)} />
+                    {GOAL_CATEGORIES[c].label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
           <div className="flex gap-2 pt-1">
             <button

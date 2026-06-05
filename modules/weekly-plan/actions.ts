@@ -21,6 +21,7 @@ async function getUser() {
 export async function createGoal(input: {
   title: string;
   description?: string | null;
+  category?: string | null;
   weekStart: string;
 }): Promise<void> {
   const { supabase, userId } = await getUser();
@@ -38,6 +39,7 @@ export async function createGoal(input: {
     user_id: userId,
     title: input.title.trim(),
     description: input.description?.trim() || null,
+    category: input.category || null,
     week_start: input.weekStart,
     position: (last?.position ?? -1) + 1,
   });
@@ -50,11 +52,13 @@ export async function updateGoal(input: {
   id: string;
   title?: string;
   description?: string | null;
+  category?: string | null;
 }): Promise<void> {
   const { supabase } = await getUser();
   const patch: Record<string, unknown> = {};
   if (input.title !== undefined) patch.title = input.title.trim();
   if (input.description !== undefined) patch.description = input.description?.trim() || null;
+  if (input.category !== undefined) patch.category = input.category || null;
   const { error } = await supabase.from("weekly_goals").update(patch).eq("id", input.id);
   if (error) throw new Error(`updateGoal: ${error.message}`);
   revalidatePath("/weekly-plan");
