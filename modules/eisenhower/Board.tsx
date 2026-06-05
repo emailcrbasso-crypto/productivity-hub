@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { QuadrantCard } from "./QuadrantCard";
 import { TaskFormDialog } from "./TaskFormDialog";
 import {
@@ -15,6 +16,17 @@ import {
 type Props = {
   tasks: EisenhowerTask[];
 };
+
+function isToday(iso: string | null) {
+  if (!iso) return false;
+  const d = new Date(iso);
+  const t = new Date();
+  return (
+    d.getFullYear() === t.getFullYear() &&
+    d.getMonth() === t.getMonth() &&
+    d.getDate() === t.getDate()
+  );
+}
 
 export function Board({ tasks }: Props) {
   const [showCompleted, setShowCompleted] = useState(false);
@@ -49,22 +61,59 @@ export function Board({ tasks }: Props) {
   };
   for (const t of tasks) byQuadrant[quadrantOf(t)].push(t);
 
+  const pendingCount = tasks.filter((t) => !t.is_completed).length;
+  const completedToday = tasks.filter(
+    (t) => t.is_completed && isToday(t.completed_at),
+  ).length;
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <label className="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-300">
-          <input
-            type="checkbox"
-            checked={showCompleted}
-            onChange={(e) => setShowCompleted(e.target.checked)}
-            className="h-3.5 w-3.5 cursor-pointer accent-indigo-600"
-          />
-          Mostrar concluídas
-        </label>
-        <Button size="sm" onClick={() => openCreate("q1")}>
-          <Plus size={14} /> Nova tarefa
-        </Button>
+      <div
+        className={cn(
+          "flex flex-wrap items-center justify-between gap-3 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs dark:border-zinc-800 dark:bg-zinc-950",
+        )}
+      >
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+          {QUADRANTS.map((q) => (
+            <span key={q.id} className="flex items-center gap-1.5">
+              <span className={cn("h-2 w-2 rounded-full", q.accent.dot)} />
+              <span className="font-medium text-zinc-700 dark:text-zinc-200">
+                {q.id.toUpperCase()}
+              </span>
+              <span className="tabular-nums text-zinc-500 dark:text-zinc-400">
+                {byQuadrant[q.id].filter((t) => !t.is_completed).length}
+              </span>
+            </span>
+          ))}
+        </div>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-zinc-500 dark:text-zinc-400">
+          <span>
+            Hoje:{" "}
+            <strong className="text-zinc-900 dark:text-white">
+              {completedToday}
+            </strong>{" "}
+            concluídas
+          </span>
+          <label className="flex cursor-pointer items-center gap-1.5">
+            <input
+              type="checkbox"
+              checked={showCompleted}
+              onChange={(e) => setShowCompleted(e.target.checked)}
+              className="h-3.5 w-3.5 cursor-pointer accent-indigo-600"
+            />
+            Mostrar concluídas
+          </label>
+          <Button size="sm" onClick={() => openCreate("q1")}>
+            <Plus size={14} /> Nova tarefa
+          </Button>
+        </div>
       </div>
+
+      {pendingCount === 0 ? (
+        <p className="text-xs italic text-zinc-500 dark:text-zinc-400">
+          Nenhuma tarefa ativa.
+        </p>
+      ) : null}
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         {QUADRANTS.map((meta) => (

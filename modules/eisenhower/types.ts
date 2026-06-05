@@ -21,6 +21,14 @@ export type QuadrantMeta = {
   label: string;
   short: string;
   hint: string;
+  /** Long description shown in the (i) popover */
+  description: string;
+  /** Example tasks shown in the popover */
+  examples: string[];
+  /** Closing tip shown in the popover */
+  tip: string;
+  /** Friendly text shown when the quadrant has no visible tasks */
+  emptyMessage: string;
   is_urgent: boolean;
   is_important: boolean;
   /** Tailwind classes for accent (border, header bg) */
@@ -38,6 +46,11 @@ export const QUADRANTS: QuadrantMeta[] = [
     label: "Fazer agora",
     short: "Urgente + Importante",
     hint: "Crises, prazos críticos",
+    description:
+      "Tarefas críticas que precisam de ação imediata. São urgentes e importantes ao mesmo tempo.",
+    examples: ["Prazo de entrega hoje", "Cliente com problema grave", "Bug em produção"],
+    tip: "Faça agora. Se Q1 está sempre cheio, algo no seu planejamento precisa mudar.",
+    emptyMessage: "Nenhuma tarefa crítica. Bom sinal.",
     is_urgent: true,
     is_important: true,
     accent: {
@@ -52,6 +65,16 @@ export const QUADRANTS: QuadrantMeta[] = [
     label: "Agendar",
     short: "Importante, não urgente",
     hint: "Planejamento, projetos estratégicos",
+    description:
+      "Tarefas importantes que não têm urgência imediata. É aqui que mora o crescimento real.",
+    examples: [
+      "Planejamento semanal",
+      "Aprender algo novo",
+      "Cuidar da saúde",
+      "Projetos estratégicos",
+    ],
+    tip: "Agende blocos de tempo para este quadrante. Quem vive só no Q1 negligencia o Q2.",
+    emptyMessage: "Adicione o que merece atenção planejada.",
     is_urgent: false,
     is_important: true,
     accent: {
@@ -66,6 +89,15 @@ export const QUADRANTS: QuadrantMeta[] = [
     label: "Delegar",
     short: "Urgente, não importante",
     hint: "Interrupções, reuniões evitáveis",
+    description:
+      "Tarefas que parecem urgentes mas não contribuem para seus objetivos. Delegue sempre que possível.",
+    examples: [
+      "Reuniões que poderiam ser e-mail",
+      "Pedidos de terceiros",
+      "Interrupções frequentes",
+    ],
+    tip: "Cuidado: o Q3 disfarça urgência como importância. Delegue ou recuse.",
+    emptyMessage: "Sem interrupções por aqui.",
     is_urgent: true,
     is_important: false,
     accent: {
@@ -80,6 +112,15 @@ export const QUADRANTS: QuadrantMeta[] = [
     label: "Eliminar",
     short: "Nem urgente, nem importante",
     hint: "Distrações, perda de tempo",
+    description:
+      "Atividades que não agregam valor. Consomem tempo sem trazer resultado.",
+    examples: [
+      "Scroll sem propósito",
+      "Reuniões desnecessárias",
+      "Tarefas por hábito, não necessidade",
+    ],
+    tip: "Elimine ou minimize ao máximo. Tempo no Q4 é tempo roubado do Q2.",
+    emptyMessage: "Nada para eliminar agora.",
     is_urgent: false,
     is_important: false,
     accent: {
