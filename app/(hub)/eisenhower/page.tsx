@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { Board } from "@/modules/eisenhower/Board";
+import { ModuleHeader, EisenhowerLogo } from "@/components/module-header";
 import type { EisenhowerTask } from "@/modules/eisenhower/types";
 
 export const metadata = { title: "Eisenhower" };
@@ -23,14 +24,11 @@ export default async function EisenhowerPage({ searchParams }: Props) {
 
   return (
     <div className="mx-auto max-w-6xl space-y-4 p-4 md:p-8">
-      <div>
-        <h2 className="text-xl font-semibold text-zinc-900 dark:text-white">
-          Matriz de Eisenhower
-        </h2>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          Classifique suas tarefas por urgência e importância.
-        </p>
-      </div>
+      <ModuleHeader
+        logo={<EisenhowerLogo />}
+        title="Matriz de Eisenhower"
+        subtitle="Classifique suas tarefas por urgência e importância."
+      />
       <Board tasks={tasks} prefillTitle={prefillTitle} />
     </div>
   );

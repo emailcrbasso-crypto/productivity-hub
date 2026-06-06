@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { Timeline } from "@/modules/timeboxing/Timeline";
+import { ModuleHeader, TimeBoxingLogo } from "@/components/module-header";
 import { todayISO } from "@/modules/timeboxing/types";
 import type { TimeboxBlock } from "@/modules/timeboxing/types";
 
@@ -19,12 +20,11 @@ export default async function TimeBoxingPage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-4 p-4 md:p-6">
-      <div>
-        <h2 className="text-xl font-semibold text-zinc-900 dark:text-white">Time Boxing</h2>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          Planeje seu dia alocando blocos de tempo para cada atividade. +15 XP por bloco concluído.
-        </p>
-      </div>
+      <ModuleHeader
+        logo={<TimeBoxingLogo />}
+        title="Time Boxing"
+        subtitle="Planeje seu dia alocando blocos de tempo para cada atividade. +15 XP por bloco concluído."
+      />
       <Timeline initialBlocks={blocks} initialDate={today} />
     </div>
   );

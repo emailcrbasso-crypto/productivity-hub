@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { PomodoroTimer } from "@/modules/pomodoro/PomodoroTimer";
 import { PomodoroStats } from "@/modules/pomodoro/PomodoroStats";
+import { ModuleHeader, PomodoroLogo } from "@/components/module-header";
 import type { PomodoroSession } from "@/modules/pomodoro/types";
 
 export const metadata = { title: "Pomodoro" };
@@ -48,12 +49,11 @@ export default async function PomodoroPage({ searchParams }: Props) {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-8">
-      <div>
-        <h2 className="text-xl font-semibold text-zinc-900 dark:text-white">Pomodoro</h2>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          Sessões de foco com intervalos programados. +25 XP por sessão concluída.
-        </p>
-      </div>
+      <ModuleHeader
+        logo={<PomodoroLogo />}
+        title="Pomodoro"
+        subtitle="Sessões de foco com intervalos programados. +25 XP por sessão concluída."
+      />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
         {/* Timer — takes 3 columns */}
