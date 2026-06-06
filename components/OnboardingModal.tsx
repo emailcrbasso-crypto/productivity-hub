@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import {
   Grid2x2,
+  Scale,
   Timer,
   Calendar,
   CalendarDays,
@@ -23,9 +24,10 @@ type Slide = {
 
 const MODULES = [
   { icon: Grid2x2, color: "text-red-500", label: "Eisenhower", desc: "Priorize por urgência e importância" },
+  { icon: Scale, color: "text-emerald-500", label: "Impacto × Esforço", desc: "Priorize pelo retorno do esforço" },
   { icon: Timer, color: "text-amber-500", label: "Pomodoro", desc: "Sessões de foco cronometradas" },
   { icon: Calendar, color: "text-sky-500", label: "Time Boxing", desc: "Aloque blocos de tempo no dia" },
-  { icon: CalendarDays, color: "text-emerald-500", label: "Plano Semanal", desc: "Defina e revise metas da semana" },
+  { icon: CalendarDays, color: "text-violet-500", label: "Plano Semanal", desc: "Defina e revise metas da semana" },
 ];
 
 const GAMIFICATION = [

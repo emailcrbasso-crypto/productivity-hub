@@ -63,6 +63,7 @@ export default async function DashboardPage() {
     { data: todayXpEvents },
     { data: upcomingBlocks },
     { data: q1Tasks },
+    { data: quickWins },
   ] = await Promise.all([
     supabase
       .from("profiles")
@@ -117,6 +118,15 @@ export default async function DashboardPage() {
       .eq("is_completed", false)
       .order("position", { ascending: true })
       .limit(5),
+    // NEW: Ganhos rápidos pendentes (alto impacto, baixo esforço)
+    supabase
+      .from("impact_effort_tasks")
+      .select("id, title")
+      .eq("is_high_impact", true)
+      .eq("is_high_effort", false)
+      .eq("is_completed", false)
+      .order("position", { ascending: true })
+      .limit(5),
   ]);
 
   const level = profile?.current_level ?? 1;
@@ -154,6 +164,7 @@ export default async function DashboardPage() {
   const firstName = (profile?.full_name ?? "você").split(" ")[0];
   const hasSchedule = (upcomingBlocks ?? []).length > 0;
   const hasQ1 = (q1Tasks ?? []).length > 0;
+  const hasQuickWins = (quickWins ?? []).length > 0;
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-8">
@@ -226,7 +237,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* ── NOVO: Seu dia ── */}
-      {(hasSchedule || hasQ1) && (
+      {(hasSchedule || hasQ1 || hasQuickWins) && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {/* Próximos blocos */}
           {hasSchedule && (
@@ -293,6 +304,40 @@ export default async function DashboardPage() {
                     </p>
                     <Link
                       href="/eisenhower"
+                      className="shrink-0 text-zinc-300 transition-colors hover:text-zinc-500 dark:text-zinc-700"
+                    >
+                      <ArrowRight size={13} />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Ganhos rápidos — alto impacto, baixo esforço */}
+          {hasQuickWins && (
+            <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+              <div className="flex items-center justify-between border-b border-zinc-100 px-4 py-3 dark:border-zinc-800">
+                <h3 className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-white">
+                  <Zap size={14} className="text-emerald-500" />
+                  Ganhos rápidos
+                </h3>
+                <Link
+                  href="/impact-effort"
+                  className="text-[11px] text-indigo-600 hover:underline dark:text-indigo-400"
+                >
+                  Ver todos →
+                </Link>
+              </div>
+              <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                {(quickWins ?? []).map((task) => (
+                  <li key={task.id} className="flex items-center gap-3 px-4 py-2.5">
+                    <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
+                    <p className="min-w-0 flex-1 truncate text-xs font-medium text-zinc-900 dark:text-white">
+                      {task.title}
+                    </p>
+                    <Link
+                      href="/impact-effort"
                       className="shrink-0 text-zinc-300 transition-colors hover:text-zinc-500 dark:text-zinc-700"
                     >
                       <ArrowRight size={13} />
