@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 
-export type AuthState = { error: string | null };
+export type AuthState = { error: string | null; success?: boolean };
 
 export async function signInWithEmail(
   _prev: AuthState,
@@ -45,7 +45,7 @@ export async function signUpWithEmail(
   const supabase = await createClient();
   const origin = (await headers()).get("origin") ?? "";
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -56,8 +56,14 @@ export async function signUpWithEmail(
 
   if (error) return { error: error.message };
 
-  revalidatePath("/", "layout");
-  redirect("/dashboard");
+  // Confirmação de email desativada → sessão já criada, entra direto.
+  if (data.session) {
+    revalidatePath("/", "layout");
+    redirect("/dashboard");
+  }
+
+  // Confirmação ativada → email enviado (via Resend SMTP). Mostra aviso.
+  return { error: null, success: true };
 }
 
 export async function signInWithGoogle() {

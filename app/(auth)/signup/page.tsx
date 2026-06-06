@@ -12,6 +12,41 @@ const initial: AuthState = { error: null };
 export default function SignupPage() {
   const [state, formAction, pending] = useActionState(signUpWithEmail, initial);
 
+  if (state.success) {
+    return (
+      <div className="space-y-4 text-center">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-3xl dark:bg-emerald-950/40">
+          ✉️
+        </div>
+        <div>
+          <h1 className="text-xl font-semibold text-zinc-900 dark:text-white">
+            Confirme seu email
+          </h1>
+          <p className="mx-auto mt-2 max-w-xs text-sm text-zinc-500 dark:text-zinc-400">
+            Enviamos um link de confirmação para o seu email. Clique nele para
+            ativar sua conta e começar a usar o hub.
+          </p>
+        </div>
+        <p className="text-xs text-zinc-400">
+          Não recebeu? Verifique a caixa de spam ou{" "}
+          <Link
+            href="/signup"
+            className="font-medium text-zinc-900 underline-offset-4 hover:underline dark:text-white"
+          >
+            tente novamente
+          </Link>
+          .
+        </p>
+        <Link
+          href="/login"
+          className="inline-block text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+        >
+          Voltar para login
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div>
