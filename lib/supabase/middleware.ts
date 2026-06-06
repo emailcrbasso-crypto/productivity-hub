@@ -5,6 +5,7 @@ import { env } from "@/lib/env";
 const PROTECTED_PREFIXES = [
   "/dashboard",
   "/eisenhower",
+  "/impact-effort",
   "/pomodoro",
   "/timeboxing",
   "/weekly-plan",

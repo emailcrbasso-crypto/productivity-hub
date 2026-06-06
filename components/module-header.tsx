@@ -1,4 +1,4 @@
-import { Star } from "lucide-react";
+import { Star, TrendingUp } from "lucide-react";
 
 /** Tile base — estilo "ícone de app" */
 const TILE =
@@ -31,6 +31,14 @@ export function TimeBoxingLogo() {
       <span className="h-1.5 w-full rounded-full bg-indigo-400" />
       <span className="h-1.5 w-2/3 self-start rounded-full bg-sky-400" />
       <span className="h-1.5 w-full rounded-full bg-emerald-400" />
+    </div>
+  );
+}
+
+export function ImpactEffortLogo() {
+  return (
+    <div className={`${TILE} bg-emerald-50 dark:bg-emerald-950/40`}>
+      <TrendingUp size={24} className="text-emerald-500" />
     </div>
   );
 }

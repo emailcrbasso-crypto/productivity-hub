@@ -23,6 +23,7 @@ const SOURCE_META: Record<string, { label: string; color: string }> = {
   pomodoro: { label: "Pomodoro", color: "bg-amber-400" },
   timeboxing: { label: "Time Boxing", color: "bg-sky-400" },
   weekly_plan: { label: "Plano Semanal", color: "bg-emerald-400" },
+  impact_effort: { label: "Impacto × Esforço", color: "bg-teal-400" },
   hub: { label: "Hub", color: "bg-indigo-400" },
 };
 
