@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { xpForLevel } from "@/lib/gamification/xp-rules";
 import { ModuleHeader } from "@/components/module-header";
 import { ProfileNameForm } from "./ProfileNameForm";
+import { CalendarFeed } from "./CalendarFeed";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { signOut } from "@/app/(auth)/actions";
 
@@ -50,6 +51,15 @@ export default async function ProfilePage() {
         .select("achievement_id, unlocked_at")
         .eq("user_id", user.id),
     ]);
+
+  // Token do feed de calendário — query separada com fallback seguro
+  // (não quebra o perfil se a migration 0009 ainda não rodou).
+  const { data: calRow } = await supabase
+    .from("profiles")
+    .select("calendar_token")
+    .eq("id", user.id)
+    .maybeSingle();
+  const calendarToken = (calRow?.calendar_token as string | undefined) ?? null;
 
   const level = profile?.current_level ?? 1;
   const totalXp = profile?.total_xp ?? 0;
@@ -213,6 +223,12 @@ export default async function ProfilePage() {
           </p>
           <ThemeToggle />
         </div>
+
+        {calendarToken && (
+          <div className="mt-5 border-t border-zinc-100 pt-4 dark:border-zinc-800">
+            <CalendarFeed token={calendarToken} />
+          </div>
+        )}
 
         <div className="mt-5 border-t border-zinc-100 pt-4 dark:border-zinc-800">
           <form action={signOut}>
