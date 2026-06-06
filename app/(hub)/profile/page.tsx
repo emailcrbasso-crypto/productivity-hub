@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { xpForLevel } from "@/lib/gamification/xp-rules";
 import { ModuleHeader } from "@/components/module-header";
 import { ProfileNameForm } from "./ProfileNameForm";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { signOut } from "@/app/(auth)/actions";
 
 export const metadata = { title: "Perfil" };
@@ -205,6 +206,13 @@ export default async function ProfilePage() {
           Configurações da conta
         </h3>
         <ProfileNameForm currentName={profile?.full_name ?? ""} />
+
+        <div className="mt-5 border-t border-zinc-100 pt-4 dark:border-zinc-800">
+          <p className="mb-2 text-xs font-medium text-zinc-700 dark:text-zinc-300">
+            Aparência
+          </p>
+          <ThemeToggle />
+        </div>
 
         <div className="mt-5 border-t border-zinc-100 pt-4 dark:border-zinc-800">
           <form action={signOut}>
