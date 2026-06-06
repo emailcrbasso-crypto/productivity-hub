@@ -76,32 +76,45 @@ export function HabitList({ initial }: Props) {
     const n = name.trim();
     if (!n) return;
     startTransition(async () => {
-      if (editing) {
-        await updateHabit({ id: editing.id, name: n, icon, color });
-        setItems((prev) =>
-          prev.map((it) =>
-            it.habit.id === editing.id
-              ? { ...it, habit: { ...it.habit, name: n, icon, color } }
-              : it,
-          ),
-        );
-      } else {
-        // O revalidatePath na action atualiza a lista via prop `initial`.
-        await createHabit({ name: n, icon, color });
+      try {
+        if (editing) {
+          await updateHabit({ id: editing.id, name: n, icon, color });
+          setItems((prev) =>
+            prev.map((it) =>
+              it.habit.id === editing.id
+                ? { ...it, habit: { ...it.habit, name: n, icon, color } }
+                : it,
+            ),
+          );
+        } else {
+          // O revalidatePath na action atualiza a lista via prop `initial`.
+          await createHabit({ name: n, icon, color });
+        }
+        setOpen(false);
+      } catch {
+        setToast("Erro ao salvar. A migration de hábitos já foi aplicada?");
       }
-      setOpen(false);
     });
   }
 
   function handleDelete(id: string) {
     setMenuId(null);
     if (!confirm("Excluir este hábito e todo o histórico?")) return;
+    const snapshot = items;
     setItems((prev) => prev.filter((it) => it.habit.id !== id));
-    startTransition(() => deleteHabit(id));
+    startTransition(async () => {
+      try {
+        await deleteHabit(id);
+      } catch {
+        setItems(snapshot);
+        setToast("Erro ao excluir.");
+      }
+    });
   }
 
   function toggle(habitId: string) {
     const today = dayKeyAgo(0);
+    const snapshot = items;
     setItems((prev) =>
       prev.map((it) => {
         if (it.habit.id !== habitId) return it;
@@ -112,12 +125,17 @@ export function HabitList({ initial }: Props) {
       }),
     );
     startTransition(async () => {
-      const res = await toggleHabitToday(habitId);
-      if (res.awarded) {
-        let msg = `+${res.xpGained} XP`;
-        if (res.leveledUp) msg += " · Level Up! 🎉";
-        if (res.unlockedTitles.length) msg += ` · ${res.unlockedTitles[0]}`;
-        setToast(msg);
+      try {
+        const res = await toggleHabitToday(habitId);
+        if (res.awarded) {
+          let msg = `+${res.xpGained} XP`;
+          if (res.leveledUp) msg += " · Level Up! 🎉";
+          if (res.unlockedTitles.length) msg += ` · ${res.unlockedTitles[0]}`;
+          setToast(msg);
+        }
+      } catch {
+        setItems(snapshot);
+        setToast("Erro ao marcar. Tente novamente.");
       }
     });
   }
