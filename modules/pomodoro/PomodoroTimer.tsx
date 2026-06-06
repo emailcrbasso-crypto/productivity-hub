@@ -14,13 +14,16 @@ import {
   type PomodoroSettings,
 } from "./types";
 
-export type TaskSource = "eisenhower" | "impact_effort";
+export type TaskSource = "eisenhower" | "impact_effort" | "timeboxing";
 export type Task = { id: string; title: string; source?: TaskSource };
 
 const TASK_SOURCE_LABEL: Record<TaskSource, string> = {
   eisenhower: "Eisenhower",
   impact_effort: "Impacto × Esforço",
+  timeboxing: "Time Boxing",
 };
+
+const TASK_SOURCE_ORDER: TaskSource[] = ["eisenhower", "impact_effort", "timeboxing"];
 type TimerState = "idle" | "running" | "paused" | "completed";
 
 const SESSION_BG: Record<SessionType, string> = {
@@ -675,7 +678,7 @@ export function PomodoroTimer({
             className="flex-1 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
           >
             <option value="">Vincular tarefa (opcional)</option>
-            {(["eisenhower", "impact_effort"] as const).map((src) => {
+            {TASK_SOURCE_ORDER.map((src) => {
               const group = pendingTasks.filter((t) => (t.source ?? "eisenhower") === src);
               if (group.length === 0) return null;
               return (

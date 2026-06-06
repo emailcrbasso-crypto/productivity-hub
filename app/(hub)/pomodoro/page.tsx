@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PomodoroTimer } from "@/modules/pomodoro/PomodoroTimer";
 import { PomodoroStats } from "@/modules/pomodoro/PomodoroStats";
 import { ModuleHeader, PomodoroLogo } from "@/components/module-header";
-import { startOfLocalDayUTC, startOfLocalDayDaysAgoUTC } from "@/lib/time";
+import { startOfLocalDayUTC, startOfLocalDayDaysAgoUTC, localDayKey } from "@/lib/time";
 import type { PomodoroSession } from "@/modules/pomodoro/types";
 
 export const metadata = { title: "Pomodoro" };
@@ -23,6 +23,7 @@ export default async function PomodoroPage({ searchParams }: Props) {
   const [
     { data: eisenhowerRaw },
     { data: impactRaw },
+    { data: timeboxingRaw },
     { data: todaySessionsRaw },
     { data: weekSessionsRaw },
   ] = await Promise.all([
@@ -39,6 +40,14 @@ export default async function PomodoroPage({ searchParams }: Props) {
       .eq("is_completed", false)
       .order("position", { ascending: true })
       .order("created_at", { ascending: false })
+      .limit(50),
+    supabase
+      .from("timeboxing_blocks")
+      .select("id, title")
+      .eq("is_completed", false)
+      .gte("date", localDayKey())
+      .order("date", { ascending: true })
+      .order("start_time", { ascending: true })
       .limit(50),
     supabase
       .from("pomodoro_sessions")
@@ -60,6 +69,10 @@ export default async function PomodoroPage({ searchParams }: Props) {
     ...((impactRaw ?? []) as { id: string; title: string }[]).map((t) => ({
       ...t,
       source: "impact_effort" as const,
+    })),
+    ...((timeboxingRaw ?? []) as { id: string; title: string }[]).map((t) => ({
+      ...t,
+      source: "timeboxing" as const,
     })),
   ];
   const todaySessions = (todaySessionsRaw ?? []) as PomodoroSession[];
@@ -103,8 +116,20 @@ export default async function PomodoroPage({ searchParams }: Props) {
                       className="flex items-center gap-2 px-4 py-2.5 text-xs text-zinc-700 dark:text-zinc-300"
                     >
                       <span
-                        className={`h-1.5 w-1.5 shrink-0 rounded-full ${task.source === "impact_effort" ? "bg-teal-400" : "bg-red-400"}`}
-                        title={task.source === "impact_effort" ? "Impacto × Esforço" : "Eisenhower"}
+                        className={`h-1.5 w-1.5 shrink-0 rounded-full ${
+                          task.source === "impact_effort"
+                            ? "bg-teal-400"
+                            : task.source === "timeboxing"
+                              ? "bg-sky-400"
+                              : "bg-red-400"
+                        }`}
+                        title={
+                          task.source === "impact_effort"
+                            ? "Impacto × Esforço"
+                            : task.source === "timeboxing"
+                              ? "Time Boxing"
+                              : "Eisenhower"
+                        }
                       />
                       <span className="truncate">{task.title}</span>
                     </li>
