@@ -46,7 +46,15 @@ export default function LoginPage() {
           <Input id="email" name="email" type="email" required autoComplete="email" />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="password">Senha</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">Senha</Label>
+            <Link
+              href="/forgot-password"
+              className="text-xs font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+            >
+              Esqueci minha senha
+            </Link>
+          </div>
           <Input
             id="password"
             name="password"
