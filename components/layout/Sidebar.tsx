@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { signOut } from "@/app/(auth)/actions";
 import { NAV_ITEMS } from "./nav-items";
+import { Logo } from "@/components/brand/Logo";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -17,8 +18,10 @@ export function Sidebar({ userName, avatarUrl }: Props) {
 
   return (
     <aside className="hidden md:flex md:w-60 md:flex-col md:border-r md:border-zinc-200 md:bg-white dark:md:border-zinc-800 dark:md:bg-zinc-950">
-      <div className="flex h-16 items-center gap-2 px-6 text-lg font-semibold text-zinc-900 dark:text-white">
-        <span aria-hidden className="text-indigo-600 dark:text-indigo-400">⚡</span> Hub
+      <div className="flex h-16 items-center px-5">
+        <Link href="/dashboard" aria-label="Hub de Produtividade">
+          <Logo />
+        </Link>
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-2">
