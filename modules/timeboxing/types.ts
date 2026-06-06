@@ -108,10 +108,12 @@ export function blockTop(start_time: string): number {
   return (timeToMinutes(start_time) - START_HOUR * 60) * PIXELS_PER_MINUTE;
 }
 
+export const MIN_BLOCK_HEIGHT = 30; // px — garante área clicável p/ blocos curtos
+
 export function blockHeight(start_time: string, end_time: string): number {
   return Math.max(
     (timeToMinutes(end_time) - timeToMinutes(start_time)) * PIXELS_PER_MINUTE,
-    HOUR_HEIGHT / 4, // minimum visible height
+    MIN_BLOCK_HEIGHT,
   );
 }
 

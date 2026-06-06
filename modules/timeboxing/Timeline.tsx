@@ -302,17 +302,20 @@ export function Timeline({ initialBlocks, initialDate }: Props) {
             const laneL = `${(block.lane / block.totalLanes) * 100}%`;
             const isMenuOpen = menuOpenId === block.id;
             const duration = formatDuration(block.start_time, block.end_time);
+            const isShort = height < 44;
+            const openUp = top > TOTAL_HEIGHT - 200;
 
             return (
               <div
                 key={block.id}
                 data-block="true"
-                className="absolute p-[3px]"
+                className={cn("absolute p-[3px]", isMenuOpen && "z-30")}
                 style={{ top, height, left: laneL, width: laneW }}
               >
                 <div
                   className={cn(
-                    "group relative flex h-full flex-col overflow-hidden rounded-lg border-l-[4px] px-2.5 pt-1.5 pb-1.5 shadow-sm transition-all hover:shadow-md",
+                    "group relative flex h-full flex-col overflow-hidden rounded-lg border-l-[4px] shadow-sm transition-all hover:shadow-md",
+                    isShort ? "justify-center px-2 py-0.5" : "px-2.5 pt-1.5 pb-1.5",
                     colors.bg,
                     colors.border,
                     colors.darkBg,
@@ -320,17 +323,29 @@ export function Timeline({ initialBlocks, initialDate }: Props) {
                   )}
                 >
                   {/* Header row */}
-                  <div className="flex items-start justify-between gap-1">
-                    <p
-                      className={cn(
-                        "flex-1 text-xs font-bold leading-tight",
-                        colors.text,
-                        block.is_completed && "line-through opacity-60",
-                        height < 36 && "truncate",
+                  <div className="flex items-center justify-between gap-1">
+                    <div className="flex min-w-0 flex-1 items-center gap-1.5">
+                      <p
+                        className={cn(
+                          "truncate font-bold leading-tight",
+                          isShort ? "text-[11px]" : "text-xs",
+                          colors.text,
+                          block.is_completed && "line-through opacity-60",
+                        )}
+                      >
+                        {block.title}
+                      </p>
+                      {isShort && (
+                        <span
+                          className={cn(
+                            "shrink-0 text-[10px] font-medium tabular-nums opacity-50",
+                            colors.text,
+                          )}
+                        >
+                          {block.start_time.slice(0, 5)}
+                        </span>
                       )}
-                    >
-                      {block.title}
-                    </p>
+                    </div>
                     <button
                       type="button"
                       data-block="true"
@@ -339,7 +354,7 @@ export function Timeline({ initialBlocks, initialDate }: Props) {
                         setMenuOpenId(isMenuOpen ? null : block.id);
                       }}
                       className={cn(
-                        "shrink-0 rounded px-0.5 py-px text-[10px] font-black leading-none opacity-0 transition-opacity group-hover:opacity-70 hover:opacity-100",
+                        "shrink-0 rounded px-1 py-px text-[11px] font-black leading-none opacity-50 transition-opacity hover:opacity-100 group-hover:opacity-70",
                         colors.text,
                       )}
                     >
@@ -347,8 +362,8 @@ export function Timeline({ initialBlocks, initialDate }: Props) {
                     </button>
                   </div>
 
-                  {/* Time + duration */}
-                  {height >= 34 && (
+                  {/* Time + duration (blocos normais) */}
+                  {!isShort && (
                     <p className={cn("mt-0.5 text-[10px] font-medium tabular-nums opacity-60", colors.text)}>
                       {block.start_time.slice(0, 5)} · {duration}
                     </p>
@@ -378,46 +393,63 @@ export function Timeline({ initialBlocks, initialDate }: Props) {
                       <Timer size={9} /> Iniciar foco
                     </button>
                   )}
+                </div>
 
-                  {/* Context menu */}
-                  {isMenuOpen && (
-                    <>
+                {/* Context menu — fora do overflow-hidden do bloco */}
+                {isMenuOpen && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); setMenuOpenId(null); }}
+                      className="fixed inset-0 z-20"
+                      aria-label="Fechar menu"
+                    />
+                    <div
+                      className={cn(
+                        "absolute right-0 z-30 min-w-[152px] overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-xl dark:border-zinc-700 dark:bg-zinc-900",
+                        openUp ? "bottom-7" : "top-7",
+                      )}
+                    >
                       <button
                         type="button"
-                        onClick={(e) => { e.stopPropagation(); setMenuOpenId(null); }}
-                        className="fixed inset-0 z-20"
-                        aria-label="Fechar menu"
-                      />
-                      <div className="absolute right-0 top-6 z-30 min-w-[152px] overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-xl dark:border-zinc-700 dark:bg-zinc-900">
-                        <button
-                          type="button"
-                          onClick={(e) => { e.stopPropagation(); handleToggleComplete(block); }}
-                          className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800"
-                        >
-                          <Check size={13} />
-                          {block.is_completed ? "Desmarcar" : "Concluir"}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => { e.stopPropagation(); openEdit(block); }}
-                          className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800"
-                        >
-                          <Pencil size={13} />
-                          Editar
-                        </button>
-                        <div className="my-1 border-t border-zinc-100 dark:border-zinc-800" />
-                        <button
-                          type="button"
-                          onClick={(e) => { e.stopPropagation(); handleDelete(block.id); }}
-                          className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
-                        >
-                          <Trash2 size={13} />
-                          Excluir
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </div>
+                        onClick={(e) => { e.stopPropagation(); handleToggleComplete(block); }}
+                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                      >
+                        <Check size={13} />
+                        {block.is_completed ? "Desmarcar" : "Concluir"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); openEdit(block); }}
+                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                      >
+                        <Pencil size={13} />
+                        Editar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setMenuOpenId(null);
+                          router.push(`/pomodoro?block=${encodeURIComponent(block.title)}`);
+                        }}
+                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-sky-600 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-950/30"
+                      >
+                        <Timer size={13} />
+                        Iniciar foco
+                      </button>
+                      <div className="my-1 border-t border-zinc-100 dark:border-zinc-800" />
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); handleDelete(block.id); }}
+                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+                      >
+                        <Trash2 size={13} />
+                        Excluir
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             );
           })}
