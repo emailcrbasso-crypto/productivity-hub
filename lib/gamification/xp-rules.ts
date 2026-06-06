@@ -4,7 +4,8 @@ export type XpSource =
   | "pomodoro"
   | "timeboxing"
   | "weekly_plan"
-  | "impact_effort";
+  | "impact_effort"
+  | "habits";
 
 export type XpAction =
   // hub-level
@@ -22,7 +23,9 @@ export type XpAction =
   | "weekly_review_done"
   // impact_effort
   | "impact_task_completed"
-  | "quick_win_completed";
+  | "quick_win_completed"
+  // habits
+  | "habit_checked";
 
 export const XP_VALUES: Record<XpAction, number> = {
   debug_test: 50,
@@ -35,6 +38,7 @@ export const XP_VALUES: Record<XpAction, number> = {
   weekly_review_done: 50,
   impact_task_completed: 10,
   quick_win_completed: 15,
+  habit_checked: 10,
 };
 
 // level = floor(sqrt(xp / 100)) + 1  →  xp_for_level(n) = (n - 1)^2 * 100

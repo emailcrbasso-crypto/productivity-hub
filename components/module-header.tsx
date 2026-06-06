@@ -1,4 +1,4 @@
-import { Star, TrendingUp } from "lucide-react";
+import { Star, TrendingUp, Repeat } from "lucide-react";
 
 /** Tile base — estilo "ícone de app" */
 const TILE =
@@ -39,6 +39,14 @@ export function ImpactEffortLogo() {
   return (
     <div className={`${TILE} bg-emerald-50 dark:bg-emerald-950/40`}>
       <TrendingUp size={24} className="text-emerald-500" />
+    </div>
+  );
+}
+
+export function HabitsLogo() {
+  return (
+    <div className={`${TILE} bg-orange-50 dark:bg-orange-950/40`}>
+      <Repeat size={24} className="text-orange-500" />
     </div>
   );
 }

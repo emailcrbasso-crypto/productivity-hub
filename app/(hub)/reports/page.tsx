@@ -18,6 +18,7 @@ const SOURCE_META: Record<string, { label: string; bar: string }> = {
   timeboxing: { label: "Time Boxing", bar: "bg-sky-400" },
   weekly_plan: { label: "Plano Semanal", bar: "bg-emerald-400" },
   impact_effort: { label: "Impacto × Esforço", bar: "bg-teal-400" },
+  habits: { label: "Hábitos", bar: "bg-orange-400" },
   hub: { label: "Conquistas", bar: "bg-indigo-400" },
 };
 

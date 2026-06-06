@@ -24,6 +24,7 @@ const SOURCE_META: Record<string, { label: string; color: string }> = {
   timeboxing: { label: "Time Boxing", color: "bg-sky-400" },
   weekly_plan: { label: "Plano Semanal", color: "bg-emerald-400" },
   impact_effort: { label: "Impacto × Esforço", color: "bg-teal-400" },
+  habits: { label: "Hábitos", color: "bg-orange-400" },
   hub: { label: "Hub", color: "bg-indigo-400" },
 };
 

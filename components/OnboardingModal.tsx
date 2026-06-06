@@ -7,6 +7,7 @@ import {
   Timer,
   Calendar,
   CalendarDays,
+  Repeat,
   Zap,
   Flame,
   Trophy,
@@ -28,6 +29,7 @@ const MODULES = [
   { icon: Timer, color: "text-amber-500", label: "Pomodoro", desc: "Sessões de foco cronometradas" },
   { icon: Calendar, color: "text-sky-500", label: "Time Boxing", desc: "Aloque blocos de tempo no dia" },
   { icon: CalendarDays, color: "text-violet-500", label: "Plano Semanal", desc: "Defina e revise metas da semana" },
+  { icon: Repeat, color: "text-orange-500", label: "Hábitos", desc: "Construa consistência com sequências" },
 ];
 
 const GAMIFICATION = [
