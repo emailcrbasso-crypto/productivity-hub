@@ -65,25 +65,81 @@ function loadSettings(): PomodoroSettings {
   }
 }
 
-function playBeep() {
+// AudioContext reaproveitado entre sessões (criar um novo a cada vez some
+// com a permissão de áudio em alguns navegadores).
+let sharedAudioCtx: AudioContext | null = null;
+
+function getAudioCtx(): AudioContext | null {
+  if (typeof window === "undefined") return null;
   try {
-    const ctx = new AudioContext();
+    const Ctor =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext?: typeof AudioContext })
+        .webkitAudioContext;
+    if (!Ctor) return null;
+    if (!sharedAudioCtx) sharedAudioCtx = new Ctor();
+    return sharedAudioCtx;
+  } catch {
+    return null;
+  }
+}
+
+/** "Desbloqueia" o áudio num gesto do usuário (clique em iniciar). */
+function primeAudio() {
+  const ctx = getAudioCtx();
+  if (ctx && ctx.state === "suspended") ctx.resume().catch(() => {});
+}
+
+/** Chime de 3 notas ascendentes — bem mais perceptível que um beep só. */
+function playChime() {
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+  // Em abas de fundo o contexto pode estar suspenso.
+  if (ctx.state === "suspended") ctx.resume().catch(() => {});
+
+  const now = ctx.currentTime;
+  const notes = [
+    { freq: 660, at: 0 },
+    { freq: 880, at: 0.18 },
+    { freq: 1175, at: 0.36 },
+  ];
+  for (const { freq, at } of notes) {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
     gain.connect(ctx.destination);
     osc.type = "sine";
-    osc.frequency.setValueAtTime(880, ctx.currentTime);
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.0);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 1.0);
+    osc.frequency.setValueAtTime(freq, now + at);
+    gain.gain.setValueAtTime(0.0001, now + at);
+    gain.gain.exponentialRampToValueAtTime(0.35, now + at + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + at + 0.5);
+    osc.start(now + at);
+    osc.stop(now + at + 0.5);
+  }
+}
+
+function vibrate() {
+  try {
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+      navigator.vibrate([200, 100, 200]);
+    }
   } catch { /* ignore */ }
 }
 
 function sendNotification(title: string, body: string) {
-  if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
-    new Notification(title, { body, icon: "/icon.svg" });
+  if (
+    typeof window !== "undefined" &&
+    "Notification" in window &&
+    Notification.permission === "granted"
+  ) {
+    new Notification(title, {
+      body,
+      icon: "/icon.svg",
+      badge: "/icon.svg",
+      // Mantém a notificação na tela até o usuário interagir (útil p/ aba de fundo)
+      requireInteraction: true,
+      tag: "pomodoro-complete",
+    });
   }
 }
 
@@ -147,11 +203,13 @@ export function PomodoroTimer({
   const timerStateRef = useRef<TimerState>("idle");
   const sessionTypeRef = useRef<SessionType>("focus");
   const cycleCountRef = useRef(0);
+  const settingsRef = useRef<PomodoroSettings>(DEFAULT_SETTINGS);
   const settingsDialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => { timerStateRef.current = timerState; }, [timerState]);
   useEffect(() => { sessionTypeRef.current = sessionType; }, [sessionType]);
   useEffect(() => { cycleCountRef.current = cycleCount; }, [cycleCount]);
+  useEffect(() => { settingsRef.current = settings; }, [settings]);
 
   useEffect(() => {
     const s = loadSettings();
@@ -229,7 +287,8 @@ export function PomodoroTimer({
     const planned = plannedRef.current;
     const type = sessionTypeRef.current;
 
-    playBeep();
+    if (settingsRef.current.soundEnabled) playChime();
+    vibrate();
     clearPersistedTimer();
 
     completeSession(id, planned)
@@ -298,6 +357,10 @@ export function PomodoroTimer({
   }, []);
 
   async function handleStart() {
+    // Desbloqueia o áudio neste gesto do usuário (necessário p/ tocar
+    // o chime quando a aba estiver em segundo plano no fim da sessão).
+    if (settingsRef.current.soundEnabled) primeAudio();
+
     if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "default") {
       const perm = await Notification.requestPermission();
       setNotifPermission(perm);
@@ -644,7 +707,7 @@ export function PomodoroTimer({
                 type="number"
                 min={min}
                 max={max}
-                value={draftSettings[key]}
+                value={draftSettings[key] as number}
                 onChange={(e) =>
                   setDraftSettings((prev) => ({ ...prev, [key]: Number(e.target.value) }))
                 }
@@ -652,6 +715,34 @@ export function PomodoroTimer({
               />
             </div>
           ))}
+
+          {/* Som ao concluir */}
+          <div className="flex items-center justify-between gap-4 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+            <label htmlFor="soundEnabled" className="text-xs text-zinc-700 dark:text-zinc-300">
+              Som ao concluir
+            </label>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  primeAudio();
+                  playChime();
+                }}
+                className="rounded-md border border-zinc-200 px-2 py-1 text-[11px] text-zinc-500 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
+              >
+                Testar
+              </button>
+              <input
+                id="soundEnabled"
+                type="checkbox"
+                checked={draftSettings.soundEnabled}
+                onChange={(e) =>
+                  setDraftSettings((prev) => ({ ...prev, soundEnabled: e.target.checked }))
+                }
+                className="h-4 w-4 cursor-pointer accent-indigo-600"
+              />
+            </div>
+          </div>
         </div>
         <div className="mt-5 flex gap-2">
           <button

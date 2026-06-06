@@ -20,6 +20,7 @@ export type PomodoroSettings = {
   shortBreakMinutes: number;
   longBreakMinutes: number;
   sessionsBeforeLongBreak: number;
+  soundEnabled: boolean;
 };
 
 export const DEFAULT_SETTINGS: PomodoroSettings = {
@@ -27,6 +28,7 @@ export const DEFAULT_SETTINGS: PomodoroSettings = {
   shortBreakMinutes: 5,
   longBreakMinutes: 15,
   sessionsBeforeLongBreak: 4,
+  soundEnabled: true,
 };
 
 export const SETTINGS_STORAGE_KEY = "pomodoro_settings";
