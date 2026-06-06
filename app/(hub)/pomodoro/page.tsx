@@ -20,28 +20,48 @@ export default async function PomodoroPage({ searchParams }: Props) {
   const todayStart = startOfLocalDayUTC();
   const weekStart = startOfLocalDayDaysAgoUTC(6);
 
-  const [{ data: pendingTasksRaw }, { data: todaySessionsRaw }, { data: weekSessionsRaw }] =
-    await Promise.all([
-      supabase
-        .from("eisenhower_tasks")
-        .select("id, title")
-        .eq("is_completed", false)
-        .order("position", { ascending: true })
-        .order("created_at", { ascending: false })
-        .limit(50),
-      supabase
-        .from("pomodoro_sessions")
-        .select("*")
-        .gte("started_at", todayStart.toISOString())
-        .order("started_at", { ascending: false }),
-      supabase
-        .from("pomodoro_sessions")
-        .select("*")
-        .gte("started_at", weekStart.toISOString())
-        .order("started_at", { ascending: false }),
-    ]);
+  const [
+    { data: eisenhowerRaw },
+    { data: impactRaw },
+    { data: todaySessionsRaw },
+    { data: weekSessionsRaw },
+  ] = await Promise.all([
+    supabase
+      .from("eisenhower_tasks")
+      .select("id, title")
+      .eq("is_completed", false)
+      .order("position", { ascending: true })
+      .order("created_at", { ascending: false })
+      .limit(50),
+    supabase
+      .from("impact_effort_tasks")
+      .select("id, title")
+      .eq("is_completed", false)
+      .order("position", { ascending: true })
+      .order("created_at", { ascending: false })
+      .limit(50),
+    supabase
+      .from("pomodoro_sessions")
+      .select("*")
+      .gte("started_at", todayStart.toISOString())
+      .order("started_at", { ascending: false }),
+    supabase
+      .from("pomodoro_sessions")
+      .select("*")
+      .gte("started_at", weekStart.toISOString())
+      .order("started_at", { ascending: false }),
+  ]);
 
-  const pendingTasks = (pendingTasksRaw ?? []) as { id: string; title: string }[];
+  const pendingTasks = [
+    ...((eisenhowerRaw ?? []) as { id: string; title: string }[]).map((t) => ({
+      ...t,
+      source: "eisenhower" as const,
+    })),
+    ...((impactRaw ?? []) as { id: string; title: string }[]).map((t) => ({
+      ...t,
+      source: "impact_effort" as const,
+    })),
+  ];
   const todaySessions = (todaySessionsRaw ?? []) as PomodoroSession[];
   const weekSessions = (weekSessionsRaw ?? []) as PomodoroSession[];
 
@@ -67,22 +87,25 @@ export default async function PomodoroPage({ searchParams }: Props) {
                 Tarefas pendentes
               </h3>
               <p className="mt-0.5 text-[11px] text-zinc-400">
-                Vincule uma tarefa do Eisenhower ao iniciar o foco.
+                Vincule uma tarefa ao iniciar o foco.
               </p>
             </div>
             <div className="max-h-80 overflow-y-auto">
               {pendingTasks.length === 0 ? (
                 <p className="px-4 py-6 text-center text-xs italic text-zinc-400">
-                  Nenhuma tarefa pendente no Eisenhower.
+                  Nenhuma tarefa pendente.
                 </p>
               ) : (
                 <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">
                   {pendingTasks.map((task) => (
                     <li
-                      key={task.id}
+                      key={`${task.source}-${task.id}`}
                       className="flex items-center gap-2 px-4 py-2.5 text-xs text-zinc-700 dark:text-zinc-300"
                     >
-                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-300 dark:bg-zinc-600" />
+                      <span
+                        className={`h-1.5 w-1.5 shrink-0 rounded-full ${task.source === "impact_effort" ? "bg-teal-400" : "bg-red-400"}`}
+                        title={task.source === "impact_effort" ? "Impacto × Esforço" : "Eisenhower"}
+                      />
                       <span className="truncate">{task.title}</span>
                     </li>
                   ))}

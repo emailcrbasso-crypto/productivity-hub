@@ -18,6 +18,7 @@ export type StartSessionInput = {
   type: SessionType;
   plannedDurationSeconds: number;
   taskId?: string | null;
+  taskSource?: string | null;
 };
 
 export async function startSession(input: StartSessionInput): Promise<string> {
@@ -28,6 +29,7 @@ export async function startSession(input: StartSessionInput): Promise<string> {
     .insert({
       user_id: userId,
       task_id: input.taskId || null,
+      task_source: input.taskId ? input.taskSource || null : null,
       type: input.type,
       planned_duration_seconds: input.plannedDurationSeconds,
       status: "running",

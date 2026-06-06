@@ -14,7 +14,13 @@ import {
   type PomodoroSettings,
 } from "./types";
 
-export type Task = { id: string; title: string };
+export type TaskSource = "eisenhower" | "impact_effort";
+export type Task = { id: string; title: string; source?: TaskSource };
+
+const TASK_SOURCE_LABEL: Record<TaskSource, string> = {
+  eisenhower: "Eisenhower",
+  impact_effort: "Impacto × Esforço",
+};
 type TimerState = "idle" | "running" | "paused" | "completed";
 
 const SESSION_BG: Record<SessionType, string> = {
@@ -367,10 +373,12 @@ export function PomodoroTimer({
       setNotifBannerDismissed(true);
     }
     try {
+      const linked = pendingTasks.find((t) => t.id === linkedTaskId);
       const id = await startSession({
         type: sessionType,
         plannedDurationSeconds: plannedRef.current,
         taskId: linkedTaskId || null,
+        taskSource: linked?.source ?? null,
       });
       sessionIdRef.current = id;
       elapsedBeforeRef.current = 0;
@@ -666,12 +674,20 @@ export function PomodoroTimer({
             onChange={(e) => setLinkedTaskId(e.target.value)}
             className="flex-1 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
           >
-            <option value="">Vincular tarefa do Eisenhower (opcional)</option>
-            {pendingTasks.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.title}
-              </option>
-            ))}
+            <option value="">Vincular tarefa (opcional)</option>
+            {(["eisenhower", "impact_effort"] as const).map((src) => {
+              const group = pendingTasks.filter((t) => (t.source ?? "eisenhower") === src);
+              if (group.length === 0) return null;
+              return (
+                <optgroup key={src} label={TASK_SOURCE_LABEL[src]}>
+                  {group.map((t) => (
+                    <option key={`${src}-${t.id}`} value={t.id}>
+                      {t.title}
+                    </option>
+                  ))}
+                </optgroup>
+              );
+            })}
           </select>
         )}
         <button
