@@ -166,7 +166,7 @@ export function HabitList({ initial }: Props) {
         <ul className="space-y-2">
           {items.map((it) => {
             const stats = buildHabitStats(it.habit, it.dates);
-            const c = HABIT_COLORS[it.habit.color];
+            const c = HABIT_COLORS[it.habit.color] ?? HABIT_COLORS.indigo;
             return (
               <li
                 key={it.habit.id}
