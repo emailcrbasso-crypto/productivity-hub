@@ -346,6 +346,25 @@ export function Timeline({ initialBlocks, initialDate }: Props) {
                         </span>
                       )}
                     </div>
+                    {/* Foco compacto — blocos curtos (sem espaço pro botão grande) */}
+                    {isShort && !block.is_completed && (
+                      <button
+                        type="button"
+                        data-block="true"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/pomodoro?block=${encodeURIComponent(block.title)}`);
+                        }}
+                        className={cn(
+                          "shrink-0 rounded p-0.5 opacity-60 transition-opacity hover:bg-black/10 hover:opacity-100",
+                          colors.text,
+                        )}
+                        title="Iniciar foco"
+                        aria-label="Iniciar foco"
+                      >
+                        <Timer size={12} />
+                      </button>
+                    )}
                     <button
                       type="button"
                       data-block="true"
