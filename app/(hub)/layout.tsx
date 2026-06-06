@@ -33,6 +33,8 @@ export default async function HubLayout({
           level={profile?.current_level ?? 1}
           totalXp={profile?.total_xp ?? 0}
           streak={profile?.current_streak ?? 0}
+          userName={userName}
+          avatarUrl={profile?.avatar_url ?? null}
         />
         <main className="flex-1 pb-20 md:pb-0">{children}</main>
       </div>

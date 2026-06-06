@@ -8,6 +8,7 @@ const PROTECTED_PREFIXES = [
   "/pomodoro",
   "/timeboxing",
   "/weekly-plan",
+  "/profile",
   "/reset-password", // requer a sessão de recuperação criada via /auth/confirm
 ];
 

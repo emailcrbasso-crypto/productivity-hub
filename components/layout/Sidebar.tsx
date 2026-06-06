@@ -44,22 +44,31 @@ export function Sidebar({ userName, avatarUrl }: Props) {
 
       <div className="border-t border-zinc-200 p-3 dark:border-zinc-800">
         <div className="flex items-center gap-3 px-2 py-2">
-          {avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={avatarUrl}
-              alt=""
-              className="h-8 w-8 rounded-full"
-              referrerPolicy="no-referrer"
-            />
-          ) : (
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">
-              {userName.charAt(0).toUpperCase()}
-            </div>
-          )}
-          <span className="flex-1 truncate text-sm text-zinc-700 dark:text-zinc-200">
-            {userName}
-          </span>
+          <Link
+            href="/profile"
+            className={cn(
+              "flex min-w-0 flex-1 items-center gap-3 rounded-md p-1 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900",
+              (pathname === "/profile" || pathname.startsWith("/profile/")) &&
+                "bg-zinc-50 dark:bg-zinc-900",
+            )}
+          >
+            {avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={avatarUrl}
+                alt=""
+                className="h-8 w-8 rounded-full"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">
+                {userName.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <span className="min-w-0 flex-1 truncate text-sm text-zinc-700 dark:text-zinc-200">
+              {userName}
+            </span>
+          </Link>
           <form action={signOut}>
             <button
               type="submit"
