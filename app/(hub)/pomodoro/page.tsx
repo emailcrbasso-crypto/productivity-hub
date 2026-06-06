@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PomodoroTimer } from "@/modules/pomodoro/PomodoroTimer";
 import { PomodoroStats } from "@/modules/pomodoro/PomodoroStats";
 import { ModuleHeader, PomodoroLogo } from "@/components/module-header";
+import { startOfLocalDayUTC, startOfLocalDayDaysAgoUTC } from "@/lib/time";
 import type { PomodoroSession } from "@/modules/pomodoro/types";
 
 export const metadata = { title: "Pomodoro" };
@@ -16,11 +17,8 @@ export default async function PomodoroPage({ searchParams }: Props) {
 
   const supabase = await createClient();
 
-  const todayStart = new Date();
-  todayStart.setUTCHours(0, 0, 0, 0);
-
-  const weekStart = new Date(todayStart);
-  weekStart.setUTCDate(todayStart.getUTCDate() - 6);
+  const todayStart = startOfLocalDayUTC();
+  const weekStart = startOfLocalDayDaysAgoUTC(6);
 
   const [{ data: pendingTasksRaw }, { data: todaySessionsRaw }, { data: weekSessionsRaw }] =
     await Promise.all([

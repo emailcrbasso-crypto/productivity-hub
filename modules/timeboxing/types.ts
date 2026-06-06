@@ -1,3 +1,5 @@
+import { localDayKey } from "@/lib/time";
+
 export type BlockColor =
   | "indigo"
   | "red"
@@ -147,9 +149,10 @@ export function formatDuration(start_time: string, end_time: string): string {
   return m === 0 ? `${h}h` : `${h}h ${m}min`;
 }
 
+// Usa o fuso fixo da app (UTC-3) para que servidor e cliente concordem
+// sobre qual é "hoje", independentemente de onde o código roda.
 export function todayISO(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  return localDayKey();
 }
 
 export function offsetDate(dateISO: string, days: number): string {

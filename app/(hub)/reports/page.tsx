@@ -2,16 +2,10 @@ import Link from "next/link";
 import { BarChart3, Zap, Timer, CheckCircle2, Boxes, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { ModuleHeader } from "@/components/module-header";
+import { localDayKey } from "@/lib/time";
 import { cn } from "@/lib/utils";
 
 export const metadata = { title: "Relatórios" };
-
-// Brasil é UTC-3 fixo (sem horário de verão desde 2019)
-const BR_OFFSET_MS = 3 * 60 * 60 * 1000;
-
-function localDateKey(d: Date): string {
-  return new Date(d.getTime() - BR_OFFSET_MS).toISOString().slice(0, 10);
-}
 
 function dayLabel(key: string): string {
   const [, m, d] = key.split("-");
@@ -86,14 +80,14 @@ export default async function ReportsPage({ searchParams }: Props) {
   // Buckets de dias (do mais antigo ao mais recente)
   const dayKeys: string[] = [];
   for (let i = days - 1; i >= 0; i--) {
-    dayKeys.push(localDateKey(new Date(Date.now() - i * 86_400_000)));
+    dayKeys.push(localDayKey(new Date(Date.now() - i * 86_400_000)));
   }
 
   // XP por dia + por fonte
   const xpByDay = new Map<string, number>(dayKeys.map((k) => [k, 0]));
   const xpBySource = new Map<string, number>();
   for (const e of xpEvents ?? []) {
-    const key = localDateKey(new Date(e.created_at));
+    const key = localDayKey(new Date(e.created_at));
     if (xpByDay.has(key)) xpByDay.set(key, (xpByDay.get(key) ?? 0) + (e.xp_amount ?? 0));
     xpBySource.set(e.source, (xpBySource.get(e.source) ?? 0) + (e.xp_amount ?? 0));
   }
@@ -104,7 +98,7 @@ export default async function ReportsPage({ searchParams }: Props) {
   for (const s of focusSessions ?? []) {
     const secs = s.actual_duration_seconds ?? s.planned_duration_seconds ?? 0;
     totalFocusSec += secs;
-    const key = localDateKey(new Date(s.started_at));
+    const key = localDayKey(new Date(s.started_at));
     if (focusByDay.has(key)) focusByDay.set(key, (focusByDay.get(key) ?? 0) + secs);
   }
 

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { xpForLevel } from "@/lib/gamification/xp-rules";
+import { startOfLocalDayUTC, localDayKey } from "@/lib/time";
 import { currentWeekStart } from "@/modules/weekly-plan/types";
 
 export const metadata = { title: "Dashboard" };
@@ -47,9 +48,8 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const todayStart = new Date();
-  todayStart.setUTCHours(0, 0, 0, 0);
-  const todayDateISO = todayStart.toISOString().slice(0, 10);
+  const todayStart = startOfLocalDayUTC();
+  const todayDateISO = localDayKey();
   const weekStart = currentWeekStart();
 
   const [
