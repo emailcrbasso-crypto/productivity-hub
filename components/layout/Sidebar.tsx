@@ -82,6 +82,9 @@ export function Sidebar({ userName, avatarUrl }: Props) {
             </button>
           </form>
         </div>
+        <p className="px-2 pt-1 text-center text-[10px] text-zinc-400">
+          por <span className="font-semibold text-zinc-500 dark:text-zinc-400">CR BASSO Educação</span>
+        </p>
       </div>
     </aside>
   );
