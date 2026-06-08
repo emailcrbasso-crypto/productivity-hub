@@ -19,10 +19,11 @@ export function Sidebar({ userName, avatarUrl }: Props) {
 
   return (
     <aside className="hidden md:flex md:w-60 md:flex-col md:border-r md:border-zinc-200 md:bg-white dark:md:border-zinc-800 dark:md:bg-zinc-950">
-      <div className="flex h-16 items-center px-5">
+      <div className="flex flex-col gap-1.5 px-5 py-4">
         <Link href="/dashboard" aria-label="Hub de Produtividade">
           <Logo />
         </Link>
+        <CrbassoAttribution imgClassName="h-4" className="pl-0.5" />
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-2">
@@ -82,9 +83,6 @@ export function Sidebar({ userName, avatarUrl }: Props) {
               <LogOut size={16} />
             </button>
           </form>
-        </div>
-        <div className="flex justify-center pt-1">
-          <CrbassoAttribution imgClassName="h-4" />
         </div>
       </div>
     </aside>
