@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
@@ -30,4 +31,24 @@ export async function updateProfileName(
   revalidatePath("/profile");
   revalidatePath("/", "layout");
   return { error: null, success: true };
+}
+
+/**
+ * LGPD — direito de eliminação. Apaga a conta e TODOS os dados do titular
+ * (via função SECURITY DEFINER que remove o usuário em auth.users; o cascade
+ * cuida do resto). Em seguida encerra a sessão e redireciona.
+ */
+export async function deleteAccount(): Promise<void> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { error } = await supabase.rpc("delete_my_account");
+  if (error) throw new Error(`deleteAccount: ${error.message}`);
+
+  await supabase.auth.signOut();
+  revalidatePath("/", "layout");
+  redirect("/login?deleted=1");
 }

@@ -105,6 +105,19 @@ export default function SignupPage() {
         </Button>
       </form>
 
+      <p className="text-center text-[11px] leading-relaxed text-zinc-400">
+        Ao criar a conta, você concorda com a{" "}
+        <a
+          href="https://crbasso.com.br/politica-de-privacidade/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:text-zinc-600 dark:hover:text-zinc-300"
+        >
+          Política de Privacidade
+        </a>{" "}
+        da CR BASSO. Seus dados são criptografados e nunca vendidos.
+      </p>
+
       <p className="text-center text-sm text-zinc-500 dark:text-zinc-400">
         Já tem conta?{" "}
         <Link

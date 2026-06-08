@@ -4,6 +4,7 @@ import { xpForLevel } from "@/lib/gamification/xp-rules";
 import { ModuleHeader } from "@/components/module-header";
 import { ProfileNameForm } from "./ProfileNameForm";
 import { CalendarFeed } from "./CalendarFeed";
+import { PrivacySection } from "./PrivacySection";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { signOut } from "@/app/(auth)/actions";
 
@@ -234,12 +235,20 @@ export default async function ProfilePage() {
           <form action={signOut}>
             <button
               type="submit"
-              className="text-sm font-medium text-red-600 hover:underline dark:text-red-400"
+              className="text-sm font-medium text-zinc-600 hover:underline dark:text-zinc-300"
             >
               Sair da conta
             </button>
           </form>
         </div>
+      </div>
+
+      {/* Privacidade e dados (LGPD) */}
+      <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950">
+        <h3 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">
+          Privacidade e dados
+        </h3>
+        <PrivacySection />
       </div>
     </div>
   );

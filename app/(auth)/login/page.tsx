@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import { ShieldCheck } from "lucide-react";
 import { signInWithEmail, signInWithGoogle, type AuthState } from "../actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -81,6 +82,11 @@ export default function LoginPage() {
         >
           Criar conta
         </Link>
+      </p>
+
+      <p className="flex items-center justify-center gap-1.5 text-[11px] text-zinc-400">
+        <ShieldCheck size={13} className="text-emerald-500" />
+        Dados criptografados e isolados · LGPD
       </p>
     </div>
   );
