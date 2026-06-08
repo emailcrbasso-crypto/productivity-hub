@@ -6,6 +6,7 @@ import { LogOut } from "lucide-react";
 import { signOut } from "@/app/(auth)/actions";
 import { NAV_ITEMS } from "./nav-items";
 import { Logo } from "@/components/brand/Logo";
+import { CrbassoAttribution } from "@/components/brand/CrbassoAttribution";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -82,9 +83,9 @@ export function Sidebar({ userName, avatarUrl }: Props) {
             </button>
           </form>
         </div>
-        <p className="px-2 pt-1 text-center text-[10px] text-zinc-400">
-          por <span className="font-semibold text-zinc-500 dark:text-zinc-400">CR BASSO Educação</span>
-        </p>
+        <div className="flex justify-center pt-1">
+          <CrbassoAttribution imgClassName="h-4" />
+        </div>
       </div>
     </aside>
   );
