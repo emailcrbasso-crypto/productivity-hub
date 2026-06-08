@@ -11,6 +11,7 @@ const PROTECTED_PREFIXES = [
   "/weekly-plan",
   "/habits",
   "/reports",
+  "/ajuda",
   "/profile",
   "/reset-password", // requer a sessão de recuperação criada via /auth/confirm
 ];

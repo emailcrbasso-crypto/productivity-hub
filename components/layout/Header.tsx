@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HelpCircle } from "lucide-react";
 import { XPStatusBar } from "./XPStatusBar";
 
 type Props = {
@@ -12,6 +13,14 @@ type Props = {
 export function Header({ level, totalXp, streak, userName, avatarUrl }: Props) {
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-end gap-3 border-b border-zinc-200 bg-white/80 px-4 backdrop-blur md:px-6 dark:border-zinc-800 dark:bg-zinc-950/80">
+      <Link
+        href="/ajuda"
+        aria-label="Como usar"
+        title="Como usar"
+        className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+      >
+        <HelpCircle size={18} />
+      </Link>
       <XPStatusBar level={level} totalXp={totalXp} streak={streak} />
       {/* Avatar — acesso ao perfil no mobile (desktop usa a sidebar) */}
       <Link href="/profile" aria-label="Perfil" className="md:hidden">
