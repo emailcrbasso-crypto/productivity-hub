@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { ShieldCheck, ExternalLink, Trash2, AlertTriangle } from "lucide-react";
+import { ShieldCheck, ExternalLink, Trash2, AlertTriangle, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { deleteAccount } from "./actions";
+import { deleteAccount, exportMyData } from "./actions";
 
 const POLICY_URL = "https://crbasso.com.br/politica-de-privacidade/";
 const CONFIRM_WORD = "EXCLUIR";
@@ -12,6 +12,25 @@ export function PrivacySection() {
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const [pending, startTransition] = useTransition();
+  const [exporting, setExporting] = useState(false);
+
+  async function handleExport() {
+    setExporting(true);
+    try {
+      const data = await exportMyData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `hub-produtividade-meus-dados-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setExporting(false);
+    }
+  }
 
   return (
     <div className="space-y-4">
@@ -39,6 +58,28 @@ export function PrivacySection() {
           privacidade@crbasso.com.br
         </a>
       </p>
+
+      {/* Exportar dados (portabilidade) */}
+      <div className="rounded-lg border border-zinc-100 p-3 dark:border-zinc-800">
+        <div className="flex items-center gap-2">
+          <Download size={14} className="text-indigo-500" />
+          <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+            Exportar meus dados
+          </span>
+        </div>
+        <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400">
+          Baixe um arquivo JSON com tudo que você criou no hub (portabilidade LGPD).
+        </p>
+        <button
+          type="button"
+          onClick={handleExport}
+          disabled={exporting}
+          className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-indigo-600 hover:underline disabled:opacity-50 dark:text-indigo-400"
+        >
+          <Download size={13} />
+          {exporting ? "Preparando..." : "Baixar meus dados (.json)"}
+        </button>
+      </div>
 
       {/* Danger zone */}
       <div className="mt-2 rounded-lg border border-red-200 p-3 dark:border-red-900/40">

@@ -34,6 +34,44 @@ export async function updateProfileName(
 }
 
 /**
+ * LGPD — direito de portabilidade. Reúne todos os dados do titular num
+ * objeto JSON serializável (o cliente faz o download).
+ */
+export async function exportMyData(): Promise<Record<string, unknown>> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("not authenticated");
+
+  const tables = [
+    "profiles",
+    "eisenhower_tasks",
+    "impact_effort_tasks",
+    "pomodoro_sessions",
+    "timeboxing_blocks",
+    "weekly_goals",
+    "weekly_reviews",
+    "habits",
+    "habit_logs",
+    "xp_events",
+    "user_achievements",
+  ] as const;
+
+  const result: Record<string, unknown> = {
+    exported_at: new Date().toISOString(),
+    account: { id: user.id, email: user.email },
+  };
+
+  for (const table of tables) {
+    const { data } = await supabase.from(table).select("*");
+    result[table] = data ?? [];
+  }
+
+  return result;
+}
+
+/**
  * LGPD — direito de eliminação. Apaga a conta e TODOS os dados do titular
  * (via função SECURITY DEFINER que remove o usuário em auth.users; o cascade
  * cuida do resto). Em seguida encerra a sessão e redireciona.
