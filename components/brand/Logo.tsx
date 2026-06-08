@@ -55,7 +55,7 @@ export function Logo({ size = 30, wordmark = true, large = false, className }: P
               large ? "text-xl" : "text-base",
             )}
           >
-            Hub
+            Hub <span className="text-zinc-500 dark:text-zinc-400">CR BASSO</span>
           </span>
           <span
             className={cn(
