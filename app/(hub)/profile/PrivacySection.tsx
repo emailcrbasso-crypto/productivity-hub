@@ -37,9 +37,9 @@ export function PrivacySection() {
       <div className="flex items-start gap-2.5 rounded-lg bg-emerald-50 p-3 dark:bg-emerald-950/20">
         <ShieldCheck size={16} className="mt-0.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
         <p className="text-[11px] leading-relaxed text-zinc-600 dark:text-zinc-400">
-          Seus dados são <strong>criptografados</strong> e <strong>isolados</strong> — só
-          você acessa o que cria. Nunca vendemos suas informações. Tratamento conforme a
-          LGPD.
+          Seus dados são <strong>criptografados</strong> e <strong>isolados</strong>. Só
+          você acessa o que cria, e nunca vendemos suas informações. Tratamento conforme
+          a LGPD.
         </p>
       </div>
 

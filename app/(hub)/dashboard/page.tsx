@@ -10,6 +10,7 @@ import {
   ArrowRight,
   CalendarClock,
   ListTodo,
+  ShieldCheck,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { xpForLevel } from "@/lib/gamification/xp-rules";
@@ -552,6 +553,23 @@ export default async function DashboardPage() {
           </div>
         </div>
       )}
+
+      {/* Selo de privacidade (LGPD) */}
+      <div className="flex items-start justify-center gap-2 border-t border-zinc-100 pt-5 text-center dark:border-zinc-800">
+        <ShieldCheck size={14} className="mt-0.5 shrink-0 text-emerald-500" />
+        <p className="max-w-xl text-[11px] leading-relaxed text-zinc-400">
+          Seus dados são criptografados e isolados. Só você acessa o que cria, e
+          nunca vendemos suas informações. Tratamento conforme a LGPD.{" "}
+          <a
+            href="https://crbasso.com.br/politica-de-privacidade/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-indigo-500 hover:underline dark:text-indigo-400"
+          >
+            Política de Privacidade da CR BASSO
+          </a>
+        </p>
+      </div>
     </div>
   );
 }
