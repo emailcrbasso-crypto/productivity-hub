@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { PLAN_FIELDS, type FiveW2HPlan } from "./types";
+import type { FiveW2HPlan } from "./types";
 import { createPlan, updatePlan } from "./actions";
 
 type Props = {
@@ -41,6 +41,52 @@ function fromPlan(plan: FiveW2HPlan): FieldValues {
     how: plan.how,
     how_much: plan.how_much ?? "",
   };
+}
+
+type FieldDef = {
+  key: keyof FieldValues;
+  badge: string;
+  label: string;
+  placeholder: string;
+  required: boolean;
+  badgeColor: string;
+};
+
+const W_FIELDS: FieldDef[] = [
+  { key: "what", badge: "O quê?", label: "O que será feito?", placeholder: "Descreva a ação ou projeto", required: true, badgeColor: "bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300" },
+  { key: "why", badge: "Por quê?", label: "Por que isso será feito?", placeholder: "Qual o objetivo ou justificativa", required: true, badgeColor: "bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300" },
+  { key: "where_field", badge: "Onde?", label: "Onde será feito?", placeholder: "Local ou contexto", required: true, badgeColor: "bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300" },
+  { key: "when_field", badge: "Quando?", label: "Quando será feito?", placeholder: "Prazo ou data", required: true, badgeColor: "bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300" },
+  { key: "who", badge: "Quem?", label: "Quem será responsável?", placeholder: "Pessoa ou equipe responsável", required: true, badgeColor: "bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300" },
+];
+
+const H_FIELDS: FieldDef[] = [
+  { key: "how", badge: "Como?", label: "Como será feito?", placeholder: "Método, etapas ou ferramentas", required: true, badgeColor: "bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300" },
+  { key: "how_much", badge: "Quanto?", label: "Quanto vai custar?", placeholder: "Orçamento, horas ou recursos (opcional)", required: false, badgeColor: "bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300" },
+];
+
+function FieldRow({ f, value, onChange }: { f: FieldDef; value: string; onChange: (v: string) => void }) {
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor={`plan-${f.key}`} className="flex items-center gap-2">
+        <span className={`rounded-md px-2 py-0.5 text-[11px] font-bold tracking-wide ${f.badgeColor}`}>
+          {f.badge}
+        </span>
+        <span className="font-normal text-zinc-500 dark:text-zinc-400">{f.label}</span>
+        {!f.required && (
+          <span className="text-[11px] text-zinc-400">(opcional)</span>
+        )}
+      </Label>
+      <Textarea
+        id={`plan-${f.key}`}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={f.placeholder}
+        rows={2}
+        required={f.required}
+      />
+    </div>
+  );
 }
 
 export function PlanFormDialog({ open, onClose, editing }: Props) {
@@ -116,8 +162,9 @@ export function PlanFormDialog({ open, onClose, editing }: Props) {
       onClose={handleClose}
       className="rounded-xl border border-zinc-200 bg-white p-0 shadow-2xl backdrop:bg-zinc-900/40 dark:border-zinc-800 dark:bg-zinc-900"
     >
-      <form onSubmit={handleSubmit} className="w-[min(96vw,600px)] p-5">
-        <div className="mb-4 flex items-center justify-between">
+      <form onSubmit={handleSubmit} className="w-[min(96vw,600px)]">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
           <h2 className="text-base font-semibold text-zinc-900 dark:text-white">
             {editing ? "Editar plano" : "Novo plano 5W2H"}
           </h2>
@@ -131,7 +178,8 @@ export function PlanFormDialog({ open, onClose, editing }: Props) {
           </button>
         </div>
 
-        <div className="space-y-3 overflow-y-auto" style={{ maxHeight: "70vh" }}>
+        <div className="space-y-4 overflow-y-auto px-5 py-4" style={{ maxHeight: "70vh" }}>
+          {/* Plan name */}
           <div className="space-y-1.5">
             <Label htmlFor="plan-title">Nome do plano</Label>
             <Input
@@ -145,41 +193,44 @@ export function PlanFormDialog({ open, onClose, editing }: Props) {
             />
           </div>
 
-          <div className="my-3 border-t border-zinc-100 dark:border-zinc-800" />
-
-          {PLAN_FIELDS.map((f) => (
-            <div key={f.key} className="space-y-1.5">
-              <Label htmlFor={`plan-${f.key}`}>
-                <span className="font-semibold text-indigo-600 dark:text-indigo-400">{f.label}</span>
-                {" "}
-                <span className="font-normal text-zinc-500">{f.question}</span>
-                {!f.required && (
-                  <span className="ml-1 text-[11px] text-zinc-400">(opcional)</span>
-                )}
-              </Label>
-              <Textarea
-                id={`plan-${f.key}`}
-                value={fields[f.key]}
-                onChange={(e) => set(f.key, e.target.value)}
-                placeholder={f.placeholder}
-                rows={2}
-                required={f.required}
-              />
+          {/* 5W section */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400">5W — Contexto</span>
+              <div className="flex-1 border-t border-violet-100 dark:border-violet-900" />
             </div>
-          ))}
+            {W_FIELDS.map((f) => (
+              <FieldRow key={f.key} f={f} value={fields[f.key]} onChange={(v) => set(f.key, v)} />
+            ))}
+          </div>
+
+          {/* 2H section */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">2H — Execução</span>
+              <div className="flex-1 border-t border-indigo-100 dark:border-indigo-900" />
+            </div>
+            {H_FIELDS.map((f) => (
+              <FieldRow key={f.key} f={f} value={fields[f.key]} onChange={(v) => set(f.key, v)} />
+            ))}
+          </div>
         </div>
 
-        {error ? (
-          <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>
-        ) : null}
-
-        <div className="mt-4 flex justify-end gap-2 border-t border-zinc-100 pt-4 dark:border-zinc-800">
-          <Button type="button" variant="outline" onClick={handleClose} disabled={pending}>
-            Cancelar
-          </Button>
-          <Button type="submit" disabled={pending}>
-            {pending ? "Salvando..." : editing ? "Salvar" : "Criar plano"}
-          </Button>
+        {/* Footer */}
+        <div className="flex items-center justify-between border-t border-zinc-100 px-5 py-4 dark:border-zinc-800">
+          {error ? (
+            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+          ) : (
+            <span />
+          )}
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" onClick={handleClose} disabled={pending}>
+              Cancelar
+            </Button>
+            <Button type="submit" disabled={pending}>
+              {pending ? "Salvando..." : editing ? "Salvar" : "Criar plano"}
+            </Button>
+          </div>
         </div>
       </form>
     </dialog>
