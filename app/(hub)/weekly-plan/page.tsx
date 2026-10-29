@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { WeeklyPlanBoard } from "@/modules/weekly-plan/WeeklyPlanBoard";
 import { ModuleHeader, WeeklyPlanLogo } from "@/components/module-header";
+import { ToolHelp } from "@/components/tool-help";
 import { currentWeekStart } from "@/modules/weekly-plan/types";
 import type { WeeklyGoal, WeeklyReview } from "@/modules/weekly-plan/types";
 
@@ -32,6 +33,12 @@ export default async function WeeklyPlanPage() {
         logo={<WeeklyPlanLogo />}
         title="Plano Semanal"
         subtitle="Defina suas metas semanais e faça uma revisão ao final. +30 XP por meta · +50 XP pela revisão."
+      />
+      <ToolHelp
+        what="Une dois rituais: a definição de metas no começo da semana e uma revisão (retrospectiva) no fim. Sobe um nível acima do dia a dia — é a camada tática que dá direção para os outros métodos."
+        when="No início da semana para planejar; na sexta (ou domingo) para revisar e aprender com o que passou."
+        how="Defina de 3 a 5 metas claras para a semana. Marque as concluídas conforme avança. No fim, preencha a revisão: o que foi bem, o que melhorar e o foco da próxima semana."
+        example={`Metas da semana: "finalizar proposta do cliente X", "publicar 2 artigos", "fechar o fechamento contábil". Na sexta: revisar o que avançou e o que travou.`}
       />
       <WeeklyPlanBoard
         initialGoals={goals}

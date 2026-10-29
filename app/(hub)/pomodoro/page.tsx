@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PomodoroTimer } from "@/modules/pomodoro/PomodoroTimer";
 import { PomodoroStats } from "@/modules/pomodoro/PomodoroStats";
 import { ModuleHeader, PomodoroLogo } from "@/components/module-header";
+import { ToolHelp } from "@/components/tool-help";
 import { startOfLocalDayUTC, startOfLocalDayDaysAgoUTC, localDayKey } from "@/lib/time";
 import type { PomodoroSession } from "@/modules/pomodoro/types";
 
@@ -84,6 +85,12 @@ export default async function PomodoroPage({ searchParams }: Props) {
         logo={<PomodoroLogo />}
         title="Pomodoro"
         subtitle="Sessões de foco com intervalos programados. +25 XP por sessão concluída."
+      />
+      <ToolHelp
+        what="Divide o trabalho em ciclos de foco cronometrados. O padrão clássico: 25 minutos de foco total + 5 de pausa curta; a cada 4 ciclos, uma pausa longa (15–30 min). A ideia é que o cérebro rende mais em sprints curtos do que em maratonas."
+        when="Para tarefas que exigem concentração e onde a distração é a inimiga (escrever, estudar, programar, analisar)."
+        how="Inicie o timer (você pode vincular uma tarefa do Eisenhower, Impacto×Esforço ou Time Boxing). Trabalhe sem interrupções até o alarme, descanse na pausa e repita. O timer é preciso mesmo com a aba em segundo plano e toca um som ao terminar."
+        example="Escrever uma proposta: 25 min sem checar celular/e-mail → pausa de 5 → repita. Em ~4 pomodoros (2h) você entrega com a mente ainda fresca."
       />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">

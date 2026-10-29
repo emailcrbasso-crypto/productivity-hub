@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { HabitList } from "@/modules/habits/HabitList";
 import { ModuleHeader, HabitsLogo } from "@/components/module-header";
+import { ToolHelp } from "@/components/tool-help";
 import { localDayKey } from "@/lib/time";
 import type { Habit } from "@/modules/habits/types";
 
@@ -49,6 +50,12 @@ export default async function HabitsPage() {
         logo={<HabitsLogo />}
         title="Hábitos"
         subtitle="Construa consistência. Marque todo dia e mantenha sua sequência viva. +10 XP por check."
+      />
+      <ToolHelp
+        what={`Acompanha hábitos diários e mantém viva a sua sequência (streak). Baseia-se no princípio "não quebre a corrente": o que importa é a consistência (todo dia), não a intensidade.`}
+        when="Para construir comportamentos recorrentes — ler, se exercitar, beber água, estudar, planejar o dia."
+        how="Crie um hábito (com ícone e cor), marque sempre que cumprir e veja a sequência crescer. Cada hábito tem seu próprio streak, e marcos como 7 ou 30 dias viram conquistas."
+        example={`Hábito "ler 10 páginas". Marque todos os dias. Ver a sequência chegar a 7, depois 30 dias cria o impulso de não interromper a corrente.`}
       />
       <HabitList initial={initial} />
     </div>
