@@ -127,21 +127,39 @@ export function QuadrantCard({
       </header>
 
       <div className="flex flex-1 flex-col gap-1.5 p-2">
-        {sorted.length === 0 ? (
-          <p className="m-auto px-4 py-6 text-center text-xs italic text-zinc-400 dark:text-zinc-600">
-            {meta.emptyMessage}
-          </p>
-        ) : (
-          sorted.map((task) => (
-            <TaskItem
-              key={task.id}
-              task={task}
-              onEdit={() => onEdit(task)}
-              onAfterToggle={onAfterToggle}
-              onSchedule={() => onSchedule(task)}
-            />
-          ))
-        )}
+        {sorted.map((task) => (
+          <TaskItem
+            key={task.id}
+            task={task}
+            onEdit={() => onEdit(task)}
+            onAfterToggle={onAfterToggle}
+            onSchedule={() => onSchedule(task)}
+          />
+        ))}
+        {sorted.length === 0 &&
+          meta.examples.slice(0, 2).map((ex) => (
+            <div
+              key={ex}
+              className={cn(
+                "flex items-start gap-2 rounded-md border border-dashed px-3 py-2",
+                meta.accent.border,
+                meta.accent.headerBg,
+              )}
+            >
+              <span
+                className={cn(
+                  "mt-0.5 shrink-0 rounded px-1 py-0.5 text-[9px] font-bold uppercase tracking-wide",
+                  meta.accent.headerBg,
+                  meta.accent.headerText,
+                )}
+              >
+                ex.
+              </span>
+              <p className={cn("text-xs leading-relaxed", meta.accent.headerText, "opacity-70")}>
+                {ex}
+              </p>
+            </div>
+          ))}
       </div>
 
       <button
