@@ -7,6 +7,7 @@ import {
   CalendarDays,
   Repeat,
   BarChart3,
+  LayoutList,
   type LucideIcon,
 } from "lucide-react";
 
@@ -26,6 +27,7 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/timeboxing", label: "Time Boxing", shortLabel: "Blocos", icon: Calendar },
   { href: "/weekly-plan", label: "Plano Semanal", shortLabel: "Semana", icon: CalendarDays },
   { href: "/habits", label: "Hábitos", icon: Repeat },
+  { href: "/five-w2h", label: "5W2H", icon: LayoutList },
   { href: "/reports", label: "Relatórios", shortLabel: "Stats", icon: BarChart3 },
 ];
 

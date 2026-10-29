@@ -1,4 +1,4 @@
-import { Star, TrendingUp, Repeat } from "lucide-react";
+import { Star, TrendingUp, Repeat, LayoutList } from "lucide-react";
 
 /** Tile base — estilo "ícone de app" */
 const TILE =
@@ -47,6 +47,14 @@ export function HabitsLogo() {
   return (
     <div className={`${TILE} bg-orange-50 dark:bg-orange-950/40`}>
       <Repeat size={24} className="text-orange-500" />
+    </div>
+  );
+}
+
+export function FiveW2HLogo() {
+  return (
+    <div className={`${TILE} bg-violet-50 dark:bg-violet-950/40`}>
+      <LayoutList size={24} className="text-violet-600" />
     </div>
   );
 }
