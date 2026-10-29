@@ -27,19 +27,19 @@ export default async function TimeBoxingPage() {
         subtitle="Planeje seu dia alocando blocos de tempo para cada atividade. +15 XP por bloco concluído."
       />
       <ToolHelp
-        benefit="Seu dia para de ser uma lista interminável sem fim e vira uma agenda real — você sabe exatamente o que faz em cada hora e sai do trabalho sem aquela sensação de que não fez nada."
+        benefit="Seu dia para de ser uma lista interminável e vira uma agenda real. Você sabe exatamente o que faz em cada hora e sai do trabalho sem aquela sensação de que não fez nada."
         steps={[
           "Clique em qualquer horário da linha do tempo para criar um bloco de tempo para uma atividade.",
           "Dê um nome para o bloco, escolha uma cor e defina o horário de início e fim.",
-          "Quando chegar a hora, foque só naquele bloco. Ao terminar, marque como concluído — ou clique em Foco para abrir o Pomodoro direto naquela tarefa.",
+          "Quando chegar a hora, foque só naquele bloco. Ao terminar, marque como concluído. Você também pode clicar em Foco para abrir o Pomodoro direto naquela tarefa.",
         ]}
         examples={[
-          "08:00–09:00 → e-mails e mensagens do dia (só nesse horário, não o dia todo).",
-          "09:00–11:00 → trabalho focado no projeto principal, sem atender ligações.",
-          "11:00–11:30 → revisão de pendências e alinhamentos rápidos.",
-          "14:00–15:30 → reuniões e ligações concentradas num único bloco.",
-          "15:30–16:00 → planejamento do dia seguinte para sair do trabalho sem devendo nada.",
-          "Quinta à tarde → bloco semanal de aprendizado ou desenvolvimento pessoal.",
+          "Das 8h às 9h um bloco de e-mails e mensagens do dia. Só nesse horário, não o dia todo.",
+          "Das 9h às 11h trabalho focado no projeto principal, sem atender ligações.",
+          "Das 11h às 11h30 revisão de pendências e alinhamentos rápidos.",
+          "Das 14h às 15h30 reuniões e ligações concentradas num único bloco.",
+          "Das 15h30 às 16h planejamento do dia seguinte para sair do trabalho sem devendo nada.",
+          "Toda quinta à tarde um bloco de aprendizado ou desenvolvimento pessoal.",
         ]}
       />
       <Timeline initialBlocks={blocks} initialDate={today} />

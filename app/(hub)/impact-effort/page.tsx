@@ -24,19 +24,19 @@ export default async function ImpactEffortPage() {
         subtitle="Priorize pelo retorno: foque nos ganhos rápidos, planeje as grandes apostas."
       />
       <ToolHelp
-        benefit="Você para de gastar energia em coisas que pouco entregam e passa a focar onde o retorno é maior — fazendo mais com menos esforço."
+        benefit="Você para de gastar energia em coisas que pouco entregam e passa a focar onde o retorno é maior. Mais resultado com menos esforço."
         steps={[
-          "Liste as tarefas ou projetos que você está em dúvida por onde começar e clique em + para adicioná-los.",
-          "Para cada um, pergunte: o resultado é grande? O trabalho que dá é muito? Posicione no quadrante que representa melhor essa combinação.",
-          "Comece sempre pelos Ganhos Rápidos (verde, alto impacto e pouco esforço). Planeje as Grandes Apostas. Faça o Preenchimento nas brechas. Evite o que cai no vermelho.",
+          "Liste as tarefas ou projetos que você está em dúvida sobre por onde começar e clique em + para adicioná-los.",
+          "Para cada um pense se o resultado seria grande e se o trabalho que vai dar é muito. Posicione no quadrante que melhor representa essa combinação.",
+          "Comece sempre pelos Ganhos Rápidos (verde). Planeje bem as Grandes Apostas antes de iniciar. Faça o Preenchimento nas brechas. Evite o que cai no vermelho.",
         ]}
         examples={[
-          "\"Criar um modelo de proposta que a equipe pode reutilizar\" → ganho rápido: resultado grande, pouco trabalho.",
-          "\"Lançar um novo produto do zero\" → grande aposta: resultado enorme, mas exige planejamento e fases.",
-          "\"Organizar as pastas do computador\" → preenchimento: faça quando tiver 15 minutos sobrando.",
-          "\"Refazer um relatório que ninguém lê\" → evitar: alto esforço, baixo resultado.",
-          "\"Padronizar o processo de onboarding de clientes\" → ganho rápido: pouco tempo para criar, economiza horas todo mês.",
-          "\"Fazer uma campanha de marketing completa do zero\" → grande aposta: divida em etapas menores.",
+          "\"Criar um modelo de proposta que a equipe pode reutilizar\" é um ganho rápido. Pouco tempo para criar e economiza horas de todo mundo.",
+          "\"Lançar um novo produto do zero\" é uma grande aposta. O resultado é enorme mas exige planejamento e fases bem definidas.",
+          "\"Organizar as pastas do computador\" é preenchimento. Faça quando tiver 15 minutos sobrando.",
+          "\"Refazer um relatório que ninguém lê\" é para evitar. Alto esforço e baixo resultado.",
+          "\"Padronizar o processo de onboarding de clientes\" é um ganho rápido. Pouco tempo para criar e economiza horas todo mês.",
+          "\"Fazer uma campanha de marketing completa do zero\" é uma grande aposta. Divida em etapas menores antes de começar.",
         ]}
       />
       <Board tasks={tasks} />

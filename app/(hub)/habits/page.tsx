@@ -52,19 +52,19 @@ export default async function HabitsPage() {
         subtitle="Construa consistência. Marque todo dia e mantenha sua sequência viva. +10 XP por check."
       />
       <ToolHelp
-        benefit="Você transforma intenções em rotina real e vê, dia após dia, o quanto está evoluindo — a sequência crescendo é o combustível para não parar."
+        benefit="Você transforma intenções em rotina real e vê, dia após dia, o quanto está evoluindo. A sequência crescendo é o combustível para não parar."
         steps={[
           "Clique em Novo hábito, dê um nome, escolha um ícone e uma cor que representem bem aquele comportamento.",
-          "Todo dia que cumprir o hábito, clique no círculo para marcar. É só isso — simples assim.",
-          "Não quebre a sequência: 7 dias seguidos já vira uma conquista no seu perfil. 30 dias é um marco que muda comportamentos de verdade.",
+          "Todo dia que cumprir o hábito, clique no círculo para marcar. É simples assim.",
+          "Não quebre a sequência. 7 dias seguidos já viram uma conquista no seu perfil e 30 dias é um marco que muda comportamentos de verdade.",
         ]}
         examples={[
-          "\"Ler 10 páginas\" — marcar todo dia antes de dormir. Em 1 mês você leu um livro.",
-          "\"Beber 2 litros de água\" — marcar assim que atingir a meta diária.",
-          "\"Planejar o dia\" — marcar toda manhã nos primeiros 10 minutos de trabalho.",
-          "\"30 minutos de exercício\" — marcar logo após cada treino, enquanto ainda está com a roupa de academia.",
-          "\"Estudar inglês\" — marcar após 15 minutos de prática. Em 30 dias são 7h e meia de estudo sem perceber.",
-          "\"Revisar as finanças\" — marcar toda segunda ao abrir o dia. Em 1 mês a conta bancária começa a fazer mais sentido.",
+          "\"Ler 10 páginas\" marcado todo dia antes de dormir. Em 1 mês você leu um livro inteiro.",
+          "\"Beber 2 litros de água\" marcado assim que atingir a meta diária.",
+          "\"Planejar o dia\" marcado toda manhã nos primeiros 10 minutos de trabalho.",
+          "\"30 minutos de exercício\" marcado logo após cada treino, ainda com a roupa de academia.",
+          "\"Estudar inglês\" marcado após 15 minutos de prática. Em 30 dias são 7 horas e meia de estudo sem perceber.",
+          "\"Revisar as finanças\" marcado toda segunda ao abrir o dia. Em 1 mês a conta bancária começa a fazer muito mais sentido.",
         ]}
       />
       <HabitList initial={initial} />

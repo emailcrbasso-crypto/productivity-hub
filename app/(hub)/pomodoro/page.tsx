@@ -87,18 +87,18 @@ export default async function PomodoroPage({ searchParams }: Props) {
         subtitle="Sessões de foco com intervalos programados. +25 XP por sessão concluída."
       />
       <ToolHelp
-        benefit="Você consegue trabalhar com muito mais foco e termina o dia com a sensação real de ter produzido — sem aquela fadiga de ficar pulando de tarefa em tarefa."
+        benefit="Você consegue trabalhar com muito mais foco e termina o dia com a sensação real de ter produzido. Sem aquela fadiga de ficar pulando de tarefa em tarefa."
         steps={[
-          "Escolha UMA tarefa para fazer agora (pode selecionar uma da sua lista de tarefas pendentes ao lado).",
-          "Clique em Iniciar. Você tem 25 minutos de foco total: sem celular, sem e-mail, sem redes sociais.",
-          "Quando o alarme tocar, descanse 5 minutos de verdade. A cada 4 ciclos, faça uma pausa maior de 15 a 30 minutos.",
+          "Escolha UMA tarefa para fazer agora. Você pode selecionar uma da sua lista de tarefas pendentes ao lado.",
+          "Clique em Iniciar. Você tem 25 minutos de foco total. Sem celular, sem e-mail, sem redes sociais.",
+          "Quando o alarme tocar, descanse 5 minutos de verdade. A cada 4 ciclos faça uma pausa maior de 15 a 30 minutos.",
         ]}
         examples={[
-          "Escrever uma proposta comercial: 2 ciclos de 25 min e a primeira versão está pronta.",
-          "Estudar para uma certificação: 4 ciclos por dia — em 3 semanas você percorre um conteúdo completo.",
-          "Responder e-mails acumulados: 1 ciclo resolve o que levaria horas em modo distraído.",
-          "Preparar uma apresentação do zero: separe 3 ciclos — 1 para estrutura, 1 para conteúdo, 1 para revisão.",
-          "Fazer relatório mensal: 2 ciclos com a aba do e-mail fechada entrega em metade do tempo.",
+          "Escrever uma proposta comercial. 2 ciclos de 25 min e a primeira versão já está pronta.",
+          "Estudar para uma certificação. 4 ciclos por dia e em 3 semanas você percorre um conteúdo completo.",
+          "Responder e-mails acumulados. 1 ciclo resolve o que levaria horas em modo distraído.",
+          "Preparar uma apresentação do zero. Separe 3 ciclos, 1 para estrutura, 1 para conteúdo e 1 para revisão.",
+          "Fazer o relatório mensal. 2 ciclos com a aba do e-mail fechada e você entrega em metade do tempo.",
         ]}
       />
 

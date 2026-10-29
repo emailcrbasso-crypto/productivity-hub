@@ -35,19 +35,19 @@ export default async function WeeklyPlanPage() {
         subtitle="Defina suas metas semanais e faça uma revisão ao final. +30 XP por meta · +50 XP pela revisão."
       />
       <ToolHelp
-        benefit="Você termina a semana sabendo exatamente o que conquistou — e começa a próxima com direção, não no automático ou apagando incêndios."
+        benefit="Você termina a semana sabendo exatamente o que conquistou e começa a próxima com direção. Nada de chegar na segunda no automático ou apagando incêndio."
         steps={[
-          "Na segunda-feira (ou domingo à noite): escreva de 3 a 5 metas para a semana. Seja específico — meta vaga não tem como ser concluída.",
-          "Durante a semana: conforme for avançando, marque as metas como concluídas. Isso te dá clareza sobre o que ainda falta.",
-          "Na sexta-feira: preencha a revisão semanal — o que foi bem, o que travou e qual será o foco da próxima semana.",
+          "Na segunda-feira (ou domingo à noite) escreva de 3 a 5 metas para a semana. Seja específico porque meta vaga não tem como ser concluída.",
+          "Durante a semana conforme for avançando marque as metas como concluídas. Isso te dá clareza sobre o que ainda falta.",
+          "Na sexta-feira preencha a revisão semanal. O que foi bem, o que travou e qual será o foco da próxima semana.",
         ]}
         examples={[
-          "✓ Meta boa: \"Entregar a proposta do cliente X até quinta\" — específica, tem prazo.",
-          "✗ Meta ruim: \"Trabalhar mais\" — vaga demais, impossível de marcar como concluída.",
-          "✓ Meta boa: \"Fazer 3 ligações de prospecção por dia\" — clara e mensurável.",
-          "✓ Meta boa: \"Finalizar o fechamento contábil de outubro até sexta\" — tem entrega definida.",
-          "✓ Meta boa: \"Ler 2 capítulos do livro de gestão\" — simples e verificável.",
-          "Revisão de sexta: \"O que foi bem: fechei 2 clientes. O que travou: perdi tempo com reunião desnecessária. Próxima semana: priorizar prospecção.\"",
+          "✓ Meta boa: \"Entregar a proposta do cliente X até quinta\". Específica e com prazo definido.",
+          "✗ Meta ruim: \"Trabalhar mais\". Vaga demais e impossível de marcar como concluída.",
+          "✓ Meta boa: \"Fazer 3 ligações de prospecção por dia\". Clara e mensurável.",
+          "✓ Meta boa: \"Finalizar o fechamento contábil de outubro até sexta\". Tem entrega definida.",
+          "✓ Meta boa: \"Ler 2 capítulos do livro de gestão\". Simples e verificável.",
+          "Uma revisão de sexta ficaria assim: \"Consegui fechar 2 clientes. Perdi tempo com uma reunião desnecessária. Na próxima semana vou priorizar a prospecção.\"",
         ]}
       />
       <WeeklyPlanBoard

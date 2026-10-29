@@ -31,19 +31,19 @@ export default async function EisenhowerPage({ searchParams }: Props) {
         subtitle="Classifique suas tarefas por urgência e importância."
       />
       <ToolHelp
-        benefit="Você para de apagar incêndio o dia todo e começa a trabalhar no que realmente faz diferença — sem deixar o importante cair no esquecimento."
+        benefit="Você para de apagar incêndio o dia todo e começa a trabalhar no que realmente faz diferença. O importante para de cair no esquecimento."
         steps={[
           "Pense em uma tarefa que está na sua cabeça agora e clique em + para adicioná-la.",
-          "Pergunte: ela é urgente? É importante? Coloque no quadrante que representa melhor essa combinação.",
-          "Repita até esvaziar a lista. Comece sempre pelo vermelho (urgente + importante) e reserve tempo para o azul (importante, mas sem prazo imediato).",
+          "Ela é urgente? É importante? Coloque no quadrante que melhor representa essa combinação.",
+          "Repita até esvaziar a lista. Comece sempre pelo vermelho (urgente e importante) e reserve tempo para o azul (importante, mas sem prazo imediato).",
         ]}
         examples={[
-          "\"Responder cliente insatisfeito hoje\" → vermelho (urgente + importante): fazer agora.",
-          "\"Aprender uma nova habilidade para crescer na carreira\" → azul (importante, sem urgência): agendar um horário fixo.",
-          "\"Participar de reunião que poderia ser um e-mail\" → amarelo (urgente, mas pouco importante): delegar ou encurtar.",
-          "\"Ficar checando redes sociais sem objetivo\" → cinza (nem urgente, nem importante): eliminar.",
-          "\"Montar a apresentação de amanhã para o cliente\" → vermelho: parar tudo e fazer agora.",
-          "\"Planejar as metas do próximo trimestre\" → azul: bloquear tempo na agenda esta semana.",
+          "\"Responder cliente insatisfeito hoje\" vai para o vermelho. É urgente e importante, então é para fazer agora.",
+          "\"Aprender uma nova habilidade para crescer na carreira\" vai para o azul. É importante mas não é para hoje, então agenda um horário fixo.",
+          "\"Participar de reunião que poderia ser um e-mail\" vai para o amarelo. É urgente mas não é importante, então delega ou encurta.",
+          "\"Ficar checando redes sociais sem objetivo\" vai para o cinza. Não é urgente nem importante, então elimina.",
+          "\"Montar a apresentação de amanhã para o cliente\" é vermelho. Para tudo e faz agora.",
+          "\"Planejar as metas do próximo trimestre\" é azul. Bloqueia um tempo na agenda esta semana.",
         ]}
       />
       <Board tasks={tasks} prefillTitle={prefillTitle} />
