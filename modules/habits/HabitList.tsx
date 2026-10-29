@@ -158,9 +158,30 @@ export function HabitList({ initial }: Props) {
 
       {/* Lista */}
       {items.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-zinc-300 py-12 text-center dark:border-zinc-700">
-          <span className="text-3xl">✅</span>
-          <p className="text-sm font-medium text-zinc-400">Nenhum hábito ainda</p>
+        <div className="space-y-2">
+          <p className="px-1 text-[11px] text-zinc-400">Exemplos de hábitos — adicione os seus clicando em &quot;Novo hábito&quot;</p>
+          {[
+            { icon: "📚", name: "Ler 10 páginas", streak: 7 },
+            { icon: "🏃", name: "Exercício 30 minutos", streak: 3 },
+            { icon: "💧", name: "Beber 2L de água", streak: 12 },
+          ].map((ex) => (
+            <div
+              key={ex.name}
+              className="flex items-center gap-3 rounded-xl border border-dashed border-zinc-200 bg-zinc-50/60 p-3 dark:border-zinc-800 dark:bg-zinc-900/40"
+            >
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-dashed border-zinc-300 dark:border-zinc-700" />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-base leading-none opacity-50">{ex.icon}</span>
+                  <p className="truncate text-sm font-semibold text-zinc-400 dark:text-zinc-600">{ex.name}</p>
+                </div>
+                <p className="mt-0.5 text-[11px] text-zinc-300 dark:text-zinc-700">🔥 {ex.streak} dias de sequência</p>
+              </div>
+              <span className="shrink-0 rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-zinc-300 ring-1 ring-zinc-200 dark:text-zinc-700 dark:ring-zinc-800">
+                ex.
+              </span>
+            </div>
+          ))}
         </div>
       ) : (
         <ul className="space-y-2">

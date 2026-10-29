@@ -274,15 +274,33 @@ export function WeeklyPlanBoard({ initialGoals, initialReview, initialWeekStart 
         </div>
 
         {goals.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 px-4 py-10 text-center">
-            <p className="text-sm text-zinc-400">
-              {isFuture
-                ? "Planeje suas metas para esta semana."
-                : "Nenhuma meta registrada para esta semana."}
+          <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
+            <p className="px-4 py-2 text-[11px] text-zinc-400">
+              {isFuture ? "Planeje suas metas para esta semana." : "Exemplos de metas — adicione as suas clicando em \"Nova meta\""}
             </p>
-            <Button size="sm" variant="outline" onClick={openCreate}>
-              <Plus size={13} /> Adicionar meta
-            </Button>
+            {[
+              { title: "Fechar 2 novos clientes", category: "Trabalho" },
+              { title: "Ler 3 capítulos do livro", category: "Desenvolvimento" },
+              { title: "Fazer 3 treinos na semana", category: "Saúde" },
+            ].map((ex) => (
+              <div key={ex.title} className="flex items-center gap-3 px-4 py-3">
+                <div className="mt-0.5 h-5 w-5 shrink-0 rounded-full border-2 border-dashed border-zinc-200 dark:border-zinc-700" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm text-zinc-400 dark:text-zinc-600">{ex.title}</p>
+                  <span className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-400 dark:bg-zinc-800 dark:text-zinc-600">
+                    {ex.category}
+                  </span>
+                </div>
+                <span className="shrink-0 rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-zinc-300 ring-1 ring-zinc-200 dark:text-zinc-700 dark:ring-zinc-800">
+                  ex.
+                </span>
+              </div>
+            ))}
+            <div className="px-4 py-3">
+              <Button size="sm" variant="outline" onClick={openCreate}>
+                <Plus size={13} /> Adicionar meta
+              </Button>
+            </div>
           </div>
         ) : (
           <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">

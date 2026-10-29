@@ -293,6 +293,25 @@ export function Timeline({ initialBlocks, initialDate }: Props) {
             </div>
           )}
 
+          {/* Ghost example blocks (only when day is empty) */}
+          {blocks.length === 0 && [
+            { label: "Planejamento do dia", start: "09:00", end: "09:30", color: "indigo" },
+            { label: "Trabalho focado", start: "10:00", end: "12:00", color: "emerald" },
+            { label: "Revisão e e-mails", start: "16:00", end: "17:00", color: "sky" },
+          ].map((ex) => (
+            <div
+              key={ex.label}
+              className="pointer-events-none absolute inset-x-2 flex flex-col justify-center overflow-hidden rounded-md border border-dashed border-zinc-300 bg-zinc-50/80 px-2 dark:border-zinc-700 dark:bg-zinc-900/50"
+              style={{
+                top: blockTop(ex.start + ":00"),
+                height: blockHeight(ex.start + ":00", ex.end + ":00"),
+              }}
+            >
+              <p className="truncate text-[11px] font-medium text-zinc-400 dark:text-zinc-600">{ex.label}</p>
+              <p className="text-[10px] text-zinc-300 dark:text-zinc-700">{ex.start} – {ex.end} · ex.</p>
+            </div>
+          ))}
+
           {/* Blocks */}
           {blocksWithLanes.map((block) => {
             const colors = BLOCK_COLORS[block.color];
