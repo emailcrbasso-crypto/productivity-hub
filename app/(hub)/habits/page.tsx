@@ -52,10 +52,20 @@ export default async function HabitsPage() {
         subtitle="Construa consistência. Marque todo dia e mantenha sua sequência viva. +10 XP por check."
       />
       <ToolHelp
-        what={`Acompanha hábitos diários e mantém viva a sua sequência (streak). Baseia-se no princípio "não quebre a corrente": o que importa é a consistência (todo dia), não a intensidade.`}
-        when="Para construir comportamentos recorrentes — ler, se exercitar, beber água, estudar, planejar o dia."
-        how="Crie um hábito (com ícone e cor), marque sempre que cumprir e veja a sequência crescer. Cada hábito tem seu próprio streak, e marcos como 7 ou 30 dias viram conquistas."
-        example={`Hábito "ler 10 páginas". Marque todos os dias. Ver a sequência chegar a 7, depois 30 dias cria o impulso de não interromper a corrente.`}
+        benefit="Você transforma intenções em rotina real e vê, dia após dia, o quanto está evoluindo — a sequência crescendo é o combustível para não parar."
+        steps={[
+          "Clique em Novo hábito, dê um nome, escolha um ícone e uma cor que representem bem aquele comportamento.",
+          "Todo dia que cumprir o hábito, clique no círculo para marcar. É só isso — simples assim.",
+          "Não quebre a sequência: 7 dias seguidos já vira uma conquista no seu perfil. 30 dias é um marco que muda comportamentos de verdade.",
+        ]}
+        examples={[
+          "\"Ler 10 páginas\" — marcar todo dia antes de dormir. Em 1 mês você leu um livro.",
+          "\"Beber 2 litros de água\" — marcar assim que atingir a meta diária.",
+          "\"Planejar o dia\" — marcar toda manhã nos primeiros 10 minutos de trabalho.",
+          "\"30 minutos de exercício\" — marcar logo após cada treino, enquanto ainda está com a roupa de academia.",
+          "\"Estudar inglês\" — marcar após 15 minutos de prática. Em 30 dias são 7h e meia de estudo sem perceber.",
+          "\"Revisar as finanças\" — marcar toda segunda ao abrir o dia. Em 1 mês a conta bancária começa a fazer mais sentido.",
+        ]}
       />
       <HabitList initial={initial} />
     </div>

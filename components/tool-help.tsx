@@ -1,16 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronUp, HelpCircle, Lightbulb } from "lucide-react";
+import { ChevronDown, ChevronUp, HelpCircle, Lightbulb, Sparkles } from "lucide-react";
 
 type Props = {
-  what: string;
-  when: string;
-  how: string;
-  example: string;
+  benefit: string;
+  steps: [string, string, string];
+  examples: string[];
 };
 
-export function ToolHelp({ what, when, how, example }: Props) {
+export function ToolHelp({ benefit, steps, examples }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -32,31 +31,51 @@ export function ToolHelp({ what, when, how, example }: Props) {
       </button>
 
       {open && (
-        <div className="border-t border-zinc-100 px-4 pb-4 pt-3 dark:border-zinc-800">
-          <dl className="space-y-2 text-xs">
-            <div className="flex gap-2">
-              <dt className="w-24 shrink-0 font-semibold text-zinc-400">O que é</dt>
-              <dd className="leading-relaxed text-zinc-600 dark:text-zinc-300">{what}</dd>
-            </div>
-            <div className="flex gap-2">
-              <dt className="w-24 shrink-0 font-semibold text-zinc-400">Quando usar</dt>
-              <dd className="leading-relaxed text-zinc-600 dark:text-zinc-300">{when}</dd>
-            </div>
-            <div className="flex gap-2">
-              <dt className="w-24 shrink-0 font-semibold text-zinc-400">No hub</dt>
-              <dd className="leading-relaxed text-zinc-600 dark:text-zinc-300">{how}</dd>
-            </div>
-          </dl>
+        <div className="border-t border-zinc-100 px-4 pb-4 pt-3 space-y-4 dark:border-zinc-800">
 
-          <div className="mt-3 flex gap-2 rounded-lg bg-amber-50/70 p-3 dark:bg-amber-950/20">
-            <Lightbulb size={14} className="mt-0.5 shrink-0 text-amber-500" />
-            <p className="text-[11px] leading-relaxed text-zinc-600 dark:text-zinc-300">
-              <span className="font-semibold text-amber-700 dark:text-amber-400">
-                Exemplo:{" "}
+          {/* Benefício */}
+          <div className="flex gap-2 rounded-lg bg-indigo-50/70 p-3 dark:bg-indigo-950/20">
+            <Sparkles size={14} className="mt-0.5 shrink-0 text-indigo-500" />
+            <p className="text-[11px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+              <span className="font-semibold text-indigo-700 dark:text-indigo-400">
+                Por que usar:{" "}
               </span>
-              {example}
+              {benefit}
             </p>
           </div>
+
+          {/* Passos */}
+          <div className="space-y-2">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
+              Passo a passo
+            </p>
+            <ol className="space-y-2">
+              {steps.map((step, i) => (
+                <li key={i} className="flex gap-3 text-xs">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-[10px] font-bold text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400">
+                    {i + 1}
+                  </span>
+                  <span className="leading-relaxed text-zinc-600 dark:text-zinc-300">{step}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          {/* Exemplos */}
+          <div className="space-y-2">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
+              Exemplos práticos
+            </p>
+            <ul className="space-y-1.5">
+              {examples.map((ex, i) => (
+                <li key={i} className="flex gap-2 text-[11px] leading-relaxed text-zinc-600 dark:text-zinc-300">
+                  <Lightbulb size={12} className="mt-0.5 shrink-0 text-amber-500" />
+                  {ex}
+                </li>
+              ))}
+            </ul>
+          </div>
+
         </div>
       )}
     </div>

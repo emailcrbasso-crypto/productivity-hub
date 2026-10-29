@@ -35,10 +35,20 @@ export default async function WeeklyPlanPage() {
         subtitle="Defina suas metas semanais e faça uma revisão ao final. +30 XP por meta · +50 XP pela revisão."
       />
       <ToolHelp
-        what="Une dois rituais: a definição de metas no começo da semana e uma revisão (retrospectiva) no fim. Sobe um nível acima do dia a dia — é a camada tática que dá direção para os outros métodos."
-        when="No início da semana para planejar; na sexta (ou domingo) para revisar e aprender com o que passou."
-        how="Defina de 3 a 5 metas claras para a semana. Marque as concluídas conforme avança. No fim, preencha a revisão: o que foi bem, o que melhorar e o foco da próxima semana."
-        example={`Metas da semana: "finalizar proposta do cliente X", "publicar 2 artigos", "fechar o fechamento contábil". Na sexta: revisar o que avançou e o que travou.`}
+        benefit="Você termina a semana sabendo exatamente o que conquistou — e começa a próxima com direção, não no automático ou apagando incêndios."
+        steps={[
+          "Na segunda-feira (ou domingo à noite): escreva de 3 a 5 metas para a semana. Seja específico — meta vaga não tem como ser concluída.",
+          "Durante a semana: conforme for avançando, marque as metas como concluídas. Isso te dá clareza sobre o que ainda falta.",
+          "Na sexta-feira: preencha a revisão semanal — o que foi bem, o que travou e qual será o foco da próxima semana.",
+        ]}
+        examples={[
+          "✓ Meta boa: \"Entregar a proposta do cliente X até quinta\" — específica, tem prazo.",
+          "✗ Meta ruim: \"Trabalhar mais\" — vaga demais, impossível de marcar como concluída.",
+          "✓ Meta boa: \"Fazer 3 ligações de prospecção por dia\" — clara e mensurável.",
+          "✓ Meta boa: \"Finalizar o fechamento contábil de outubro até sexta\" — tem entrega definida.",
+          "✓ Meta boa: \"Ler 2 capítulos do livro de gestão\" — simples e verificável.",
+          "Revisão de sexta: \"O que foi bem: fechei 2 clientes. O que travou: perdi tempo com reunião desnecessária. Próxima semana: priorizar prospecção.\"",
+        ]}
       />
       <WeeklyPlanBoard
         initialGoals={goals}

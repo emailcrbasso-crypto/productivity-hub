@@ -87,10 +87,19 @@ export default async function PomodoroPage({ searchParams }: Props) {
         subtitle="Sessões de foco com intervalos programados. +25 XP por sessão concluída."
       />
       <ToolHelp
-        what="Divide o trabalho em ciclos de foco cronometrados. O padrão clássico: 25 minutos de foco total + 5 de pausa curta; a cada 4 ciclos, uma pausa longa (15–30 min). A ideia é que o cérebro rende mais em sprints curtos do que em maratonas."
-        when="Para tarefas que exigem concentração e onde a distração é a inimiga (escrever, estudar, programar, analisar)."
-        how="Inicie o timer (você pode vincular uma tarefa do Eisenhower, Impacto×Esforço ou Time Boxing). Trabalhe sem interrupções até o alarme, descanse na pausa e repita. O timer é preciso mesmo com a aba em segundo plano e toca um som ao terminar."
-        example="Escrever uma proposta: 25 min sem checar celular/e-mail → pausa de 5 → repita. Em ~4 pomodoros (2h) você entrega com a mente ainda fresca."
+        benefit="Você consegue trabalhar com muito mais foco e termina o dia com a sensação real de ter produzido — sem aquela fadiga de ficar pulando de tarefa em tarefa."
+        steps={[
+          "Escolha UMA tarefa para fazer agora (pode selecionar uma da sua lista de tarefas pendentes ao lado).",
+          "Clique em Iniciar. Você tem 25 minutos de foco total: sem celular, sem e-mail, sem redes sociais.",
+          "Quando o alarme tocar, descanse 5 minutos de verdade. A cada 4 ciclos, faça uma pausa maior de 15 a 30 minutos.",
+        ]}
+        examples={[
+          "Escrever uma proposta comercial: 2 ciclos de 25 min e a primeira versão está pronta.",
+          "Estudar para uma certificação: 4 ciclos por dia — em 3 semanas você percorre um conteúdo completo.",
+          "Responder e-mails acumulados: 1 ciclo resolve o que levaria horas em modo distraído.",
+          "Preparar uma apresentação do zero: separe 3 ciclos — 1 para estrutura, 1 para conteúdo, 1 para revisão.",
+          "Fazer relatório mensal: 2 ciclos com a aba do e-mail fechada entrega em metade do tempo.",
+        ]}
       />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">

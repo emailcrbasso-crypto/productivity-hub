@@ -27,10 +27,20 @@ export default async function TimeBoxingPage() {
         subtitle="Planeje seu dia alocando blocos de tempo para cada atividade. +15 XP por bloco concluído."
       />
       <ToolHelp
-        what={`Em vez de uma lista solta, cada atividade recebe um horário fixo na agenda do dia (uma "caixa de tempo"). Aproveita a Lei de Parkinson: o trabalho tende a se expandir para ocupar todo o tempo disponível — então você define o limite de antemão.`}
-        when="Para planejar o dia com intenção e proteger blocos de tempo contra interrupções e reuniões aleatórias."
-        how={`Clique em qualquer horário da linha do tempo para criar um bloco. Quando o bloco termina, aquela atividade acabou (ou vira um novo bloco). Use o botão "Foco" do bloco para abrir o Pomodoro já naquele contexto.`}
-        example={`Em vez de "responder e-mails" na lista, reserve 09:00–09:30 para e-mails e 14:00–15:30 para trabalho focado no relatório. O dia ganha forma.`}
+        benefit="Seu dia para de ser uma lista interminável sem fim e vira uma agenda real — você sabe exatamente o que faz em cada hora e sai do trabalho sem aquela sensação de que não fez nada."
+        steps={[
+          "Clique em qualquer horário da linha do tempo para criar um bloco de tempo para uma atividade.",
+          "Dê um nome para o bloco, escolha uma cor e defina o horário de início e fim.",
+          "Quando chegar a hora, foque só naquele bloco. Ao terminar, marque como concluído — ou clique em Foco para abrir o Pomodoro direto naquela tarefa.",
+        ]}
+        examples={[
+          "08:00–09:00 → e-mails e mensagens do dia (só nesse horário, não o dia todo).",
+          "09:00–11:00 → trabalho focado no projeto principal, sem atender ligações.",
+          "11:00–11:30 → revisão de pendências e alinhamentos rápidos.",
+          "14:00–15:30 → reuniões e ligações concentradas num único bloco.",
+          "15:30–16:00 → planejamento do dia seguinte para sair do trabalho sem devendo nada.",
+          "Quinta à tarde → bloco semanal de aprendizado ou desenvolvimento pessoal.",
+        ]}
       />
       <Timeline initialBlocks={blocks} initialDate={today} />
     </div>
